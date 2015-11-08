@@ -1,0 +1,11 @@
+{
+  "name": "rtc",
+  "version": "1.0.0",
+  "description": "",
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "request": "^2.65.0",
+    "superagent": "^1.4.0"
+  }
+}
