@@ -57,15 +57,27 @@
         "http://jazz.net/xmlns/prod/jazz/jfs/1.0/changes" : [ { "type" : "uri" , "value" : "https://opentechtest.chinacloudapp.cn:9443/jazz/changes" } ], 
         "http://jazz.net/xmlns/prod/jazz/discovery/1.0/jsaSsoEnabled" : [ { "type" : "literal" , "value" : "false" } ], 
         "http://jazz.net/xmlns/prod/jazz/rtc/cm/1.0/trackedResourceSetProvider" : [ 
-            { "type" : "bnode" , "value" : "_:4a3b72d6_150beb13a16_1c88" }, 
-            { "type" : "bnode" , "value" : "_:4a3b72d6_150beb13a16_1c87" }
+            { "type" : "bnode" , "value" : "_:4a3b72d6_150beb13a16_24d7" }, 
+            { "type" : "bnode" , "value" : "_:4a3b72d6_150beb13a16_24d8" }
          ]
      }, 
     "https://opentechtest.chinacloudapp.cn:9443/jazz/oslc/workitems/catalog" : { 
         "http://open-services.net/ns/core#domain" : [ { "type" : "uri" , "value" : "http://open-services.net/ns/cm#" } ], 
         "http://www.w3.org/1999/02/22-rdf-syntax-ns#type" : [ { "type" : "uri" , "value" : "http://open-services.net/ns/core#ServiceProviderCatalog" } ]
      }, 
-    "_:4a3b72d6_150beb13a16_1c87" : { 
+    "_:4a3b72d6_150beb13a16_24d8" : { 
+        "http://open-services.net/ns/core/trs#trackedResourceSet" : [ { "type" : "uri" , "value" : "https://opentechtest.chinacloudapp.cn:9443/jazz/process-trs2" } ], 
+        "http://open-services.net/ns/core#domain" : [ { "type" : "uri" , "value" : "http://jazz.net/ns/process#" } ], 
+        "http://purl.org/dc/terms/description" : [ { "type" : "literal" , "value" : "TRS 2.0 feed for process resources in RTC" } ], 
+        "http://www.w3.org/1999/02/22-rdf-syntax-ns#type" : [ { "type" : "uri" , "value" : "http://open-services.net/ns/core/trs#TrackedResourceSet" } ], 
+        "http://purl.org/dc/terms/type" : [ { "type" : "uri" , "value" : "http://jazz.net/ns/process#" } ], 
+        "http://purl.org/dc/terms/title" : [ { "type" : "literal" , "value" : "TRS 2.0 for RTC Process Resources" } ]
+     }, 
+    "https://opentechtest.chinacloudapp.cn:9443/jazz/oslc-scm/catalog" : { 
+        "http://open-services.net/ns/core#domain" : [ { "type" : "uri" , "value" : "http://open-services.net/ns/scm#" } ], 
+        "http://www.w3.org/1999/02/22-rdf-syntax-ns#type" : [ { "type" : "uri" , "value" : "http://open-services.net/ns/core#ServiceProviderCatalog" } ]
+     }, 
+    "_:4a3b72d6_150beb13a16_24d7" : { 
         "http://open-services.net/ns/core#domain" : [ 
             { "type" : "uri" , "value" : "http://open-services.net/ns/config#" }, 
             { "type" : "uri" , "value" : "http://open-services.net/ns/cm#" }
@@ -73,17 +85,5 @@
         "http://jazz.net/ns/trs#trackedResourceSet" : [ { "type" : "uri" , "value" : "https://opentechtest.chinacloudapp.cn:9443/jazz/oslc/workitems/trs" } ], 
         "http://www.w3.org/1999/02/22-rdf-syntax-ns#type" : [ { "type" : "uri" , "value" : "http://jazz.net/ns/trs#TrackedResourceSetProvider" } ], 
         "http://purl.org/dc/terms/type" : [ { "type" : "uri" , "value" : "http://open-services.net/ns/cm#" } ]
-     }, 
-    "https://opentechtest.chinacloudapp.cn:9443/jazz/oslc-scm/catalog" : { 
-        "http://open-services.net/ns/core#domain" : [ { "type" : "uri" , "value" : "http://open-services.net/ns/scm#" } ], 
-        "http://www.w3.org/1999/02/22-rdf-syntax-ns#type" : [ { "type" : "uri" , "value" : "http://open-services.net/ns/core#ServiceProviderCatalog" } ]
-     }, 
-    "_:4a3b72d6_150beb13a16_1c88" : { 
-        "http://open-services.net/ns/core/trs#trackedResourceSet" : [ { "type" : "uri" , "value" : "https://opentechtest.chinacloudapp.cn:9443/jazz/process-trs2" } ], 
-        "http://open-services.net/ns/core#domain" : [ { "type" : "uri" , "value" : "http://jazz.net/ns/process#" } ], 
-        "http://purl.org/dc/terms/description" : [ { "type" : "literal" , "value" : "TRS 2.0 feed for process resources in RTC" } ], 
-        "http://www.w3.org/1999/02/22-rdf-syntax-ns#type" : [ { "type" : "uri" , "value" : "http://open-services.net/ns/core/trs#TrackedResourceSet" } ], 
-        "http://purl.org/dc/terms/type" : [ { "type" : "uri" , "value" : "http://jazz.net/ns/process#" } ], 
-        "http://purl.org/dc/terms/title" : [ { "type" : "literal" , "value" : "TRS 2.0 for RTC Process Resources" } ]
      }
  }
