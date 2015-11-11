@@ -1,6 +1,7 @@
 /**
  * Created by jack8 on 2015/11/9.
  */
+var fs = require('fs');
 
 function Updater(request, rootUrl) {
     this.rootUrl = rootUrl;
@@ -34,7 +35,7 @@ Updater.prototype.getProjects = function(callback) {
                 return callback(err);
             }
             return callback(null, res.body);
-        });
+        }).pipe(fs.createWriteStream('projects.xml'));
     });
 }
 
