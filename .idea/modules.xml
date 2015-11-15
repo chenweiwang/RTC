@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/RTCRest.iml" filepath="$PROJECT_DIR$/RTCRest.iml" />
+      <module fileurl="file://$PROJECT_DIR$/RTC.iml" filepath="$PROJECT_DIR$/RTC.iml" />
     </modules>
   </component>
 </project>

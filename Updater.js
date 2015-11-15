@@ -1,18 +1,36 @@
 /**
  * Created by jack8 on 2015/11/9.
  */
-var fs = require('fs');
+var fs = require('fs'),
+    authenticate = require('./authenticate.js');
 
-function Updater(request, rootUrl) {
+function Updater(request, rootUrl, username, password) {
     this.rootUrl = rootUrl;
     this.request = request;
+    this.username = username;
+    this.password = password;
     this.rootServicesUrl = rootUrl + "/rootservices";
+    this.hasAuthed = false;
 }
 
 module.exports = Updater;
 
+Updater.prototype.auth = function (callback) {
+    if (!this.hasAuthed) {
+        authenticate(this.request, this.rootUrl, this.username, this.password, function (err) {
+            if (err) {
+                console.log("Login failed!");
+                callback(err);
+            } else {
+                this.hasAuthed = true;
+                callback(null);
+            }
+        });
+    }
+}
+
 //get the projects
-Updater.prototype.getProjects = function(callback) {
+Updater.prototype.getProjects = function (callback) {
     var request = this.request;
     var options = {
         url: this.rootServicesUrl,
@@ -20,7 +38,7 @@ Updater.prototype.getProjects = function(callback) {
             'Accept': 'application/json'
         }
     };
-    request.get(options, function(err, res) {
+    request.get(options, function (err, res) {
         if (err) {
             return callback(err);
         }
@@ -30,7 +48,7 @@ Updater.prototype.getProjects = function(callback) {
         console.log("Projects Url: " + projectsUrl);
         options.url = projectsUrl;
         options.headers.Accept = '*/*';
-        request.get(projectsUrl, function(err, res) {
+        request.get(projectsUrl, function (err, res) {
             if (err) {
                 return callback(err);
             }
