@@ -5,9 +5,11 @@ var mongoose = require('mongoose'),
     Schema = mongoose.Schema;
 
 var projectSchema = new Schema({
-    title: { type: String, require: true, trim: true, index: { unique: true } },
+    uuid: { type: String, require: true, trim: true, index: { unique: true } },
+    title: { type: String, require: true, trim: true },
     details: { type: String },
-    services: { type: String }
+    services: { type: String },
+    workitemUrl: { type: String }
 });
 
 var project = mongoose.model('project', projectSchema);

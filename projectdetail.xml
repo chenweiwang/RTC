@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?><jp06:project-area xmlns:jp06="http://jazz.net/xmlns/prod/jazz/process/0.6/" jp06:name="JKE Banking（变更管理）">
+    <jp06:summary>JKE Banking（变更管理）</jp06:summary>
+    <jp06:description>此项目的用途是协调 JKE Banking 应用程序的开发和交付。</jp06:description>
+    <jp06:url>https://opentechtest.chinacloudapp.cn:9443/jazz/process/project-areas/_JjVPAH_uEeWbMNI6SG32dQ</jp06:url>
+    <jp06:roles-url>https://opentechtest.chinacloudapp.cn:9443/jazz/process/project-areas/_JjVPAH_uEeWbMNI6SG32dQ/roles</jp06:roles-url>
+    <jp06:links-url>https://opentechtest.chinacloudapp.cn:9443/jazz/process/project-areas/_JjVPAH_uEeWbMNI6SG32dQ/links</jp06:links-url>
+    <jp06:members-url>https://opentechtest.chinacloudapp.cn:9443/jazz/process/project-areas/_JjVPAH_uEeWbMNI6SG32dQ/members</jp06:members-url>
+    <jp:admins-url xmlns:jp="http://jazz.net/xmlns/prod/jazz/process/1.0/">https://opentechtest.chinacloudapp.cn:9443/jazz/process/project-areas/_JjVPAH_uEeWbMNI6SG32dQ/admins</jp:admins-url>
+    <jp06:team-areas-url>https://opentechtest.chinacloudapp.cn:9443/jazz/process/project-areas/_JjVPAH_uEeWbMNI6SG32dQ/team-areas</jp06:team-areas-url>
+    <jp06:project-admins-url>https://opentechtest.chinacloudapp.cn:9443/jazz/process/project-areas/_JjVPAH_uEeWbMNI6SG32dQ/project-admins</jp06:project-admins-url>
+    <jp06:read-access-list-url>https://opentechtest.chinacloudapp.cn:9443/jazz/process/project-areas/_JjVPAH_uEeWbMNI6SG32dQ/read-access-list</jp06:read-access-list-url>
+    <jp:timelines-url xmlns:jp="http://jazz.net/xmlns/prod/jazz/process/1.0/">https://opentechtest.chinacloudapp.cn:9443/jazz/process/project-areas/_JjVPAH_uEeWbMNI6SG32dQ/timelines</jp:timelines-url>
+    <jp06:access-public>true</jp06:access-public>
+    <jp06:access-visible-to-access-list>false</jp06:access-visible-to-access-list>
+    <jp06:access-visible-to-members>false</jp06:access-visible-to-members>
+    <jp06:modified>Sat, 31 Oct 2015 16:42:17 GMT</jp06:modified>
+    <jp06:archived>false</jp06:archived>
+    <jp:history-url xmlns:jp="http://jazz.net/xmlns/prod/jazz/process/1.0/">https://opentechtest.chinacloudapp.cn:9443/jazz/process/project-areas/_JjVPAH_uEeWbMNI6SG32dQ/history</jp:history-url>
+    <jp:configuration-management-enabled xmlns:jp="http://jazz.net/xmlns/prod/jazz/process/1.0/">false</jp:configuration-management-enabled>
+</jp06:project-area>

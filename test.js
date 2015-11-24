@@ -2,16 +2,19 @@
  * Created by jack8 on 2015/11/15.
  */
 var newRequest = require('./newRequest.js'),
-    Updater = require('./Updater.js'),
-    Paser = require('./pasers/parser.js'),
+    fs = require('fs'),
+    Fetcher = require('./fetcher.js'),
+    Parser = require('./parsers/parser.js'),
     mongoose = require('mongoose'),
-    Project = require('./models/project.js').Project;
+    Project = require('./models/project.js').Project,
+    Updater = require('./updater.js');
 
 var rootUrl = "https://opentechtest.chinacloudapp.cn:9443/jazz";
 var username = "jack";
 var password = "jack";
 var request = newRequest();
 var updater = new Updater(request, rootUrl, username, password);
+var fetcher = new Fetcher(request, rootUrl, username, password);
 
 //connet to MongoDB
 var connect = function() {
@@ -24,20 +27,29 @@ mongoose.connection.on('error', console.log);
 //try to reconnect to mongodb when disconnected
 mongoose.connection.on('disconnected', connect);
 
+updater.authenticate(function (err) {
+    if (err) {
+        console.log("Login failed!");
+    } else {
+        var url = "https://opentechtest.chinacloudapp.cn:9443/jazz/oslc/contexts/_JjVPAH_uEeWbMNI6SG32dQ/workitems";
+        request.get(url, function(err, res) {
+            console.log(res.body);
+        }).pipe(fs.createWriteStream('tast_new.xml'));
+    }
+});
 
-
-updater.auth(function (err) {
+/*fetcher.auth(function (err) {
     if (err) {
         console.log("Login failed!");
     } else {
         console.log("Login to " + rootUrl + " success!");
         console.log("Begin to refresh resource..");
-        updater.getProjects(function (err, projectsXml) {
+        fetcher.getProjects(function (err, projectsXml) {
             if (err) {
                 console.log("Fetch projects failed!");
             } else {
                 console.log(projectsXml);
-               /* parseString(projectsXml, function (err, projects) {
+               /!* parseString(projectsXml, function (err, projects) {
                     if (err) {
                         console.log("Parse xml Error");
                     } else {
@@ -46,31 +58,40 @@ updater.auth(function (err) {
                         var result = tmp["oslc_disc:ServiceProvider"][0]["oslc_disc:services"];
                         console.log(result[0]["$"]["rdf:resource"]);
                     }
-                });*/
-                Paser.parseProjectsXml(projectsXml, function(projects) {
-                    for (var i = 0; i < projects.length; ++i) {
-                        Project.findOne({ title: projects[i]["title"] }, function(err, result) {
-                            if (!err && !result) {
-                                projects[i].save(function(err) {
-                                    if (err) {
-                                        console.log(err);
-                                    } else {
-                                        console.log('OK');
-                                    }
-                                });
-                            } else {
-                                console.log(err);
-                            }
-                        })
+                });*!/
+                var url = "https://opentechtest.chinacloudapp.cn:9443/jazz/process/project-areas/_JjVPAH_uEeWbMNI6SG32dQ";
+                request.get(url, function(err, res) {
+                    console.log(res.body);
+                }).pipe(fs.createWriteStream('projectdetail.xml'));
 
-                        console.log(projects[i]);
+                Parser.parseProjectsXml(projectsXml, function (err, projects) {
+                    if (err) {
+                        console.log("Parse Project xml error: " + err);
+                    } else {
+                        for (var i = 0; i < projects.length; ++i) {
+                            //pay attention to the loop variable i, fix the bug!
+                            //when the findOne callback func be called, the i will have changed!.
+                            var curProject = projects[i];
+                            Project.findOne({uuid: curProject["uuid"]}, function (err, result) {
+                                if (!err && !result) {
+                                    curProject.save(function (err) {
+                                        if (err) {
+                                            console.log(err);
+                                        } else {
+                                            console.log(curProject);
+                                        }
+                                    });
+                                } else {
+                                    console.log(err);
+                                }
+                            });
+                        }
                     }
-
-                })
+                });
             }
         })
     }
-});
+});*/
 
 
 
