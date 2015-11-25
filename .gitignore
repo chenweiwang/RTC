@@ -1,1 +1,6 @@
-# Created by .ignore support plugin (hsz.mobi)
+# Created by .ignore support plugin
+.idea/*
+node_modules/*
+RTC.iml
+RTCRest.iml
+
