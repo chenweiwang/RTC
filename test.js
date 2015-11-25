@@ -31,10 +31,23 @@ updater.authenticate(function (err) {
     if (err) {
         console.log("Login failed!");
     } else {
-        var url = "https://opentechtest.chinacloudapp.cn:9443/jazz/oslc/contexts/_JjVPAH_uEeWbMNI6SG32dQ/workitems";
+        /*var url = "https://opentechtest.chinacloudapp.cn:9443/jazz/oslc/contexts/_AaqqEpD0EeWXese5nM0f4w/workitems";
         request.get(url, function(err, res) {
+            if (err) {
+                console.log(err);
+                return;
+            }
             console.log(res.body);
-        }).pipe(fs.createWriteStream('tast_new.xml'));
+        }).pipe(fs.createWriteStream('tast_new.xml'));*/
+        /*updater.updateProjects(function (err, result) {
+            console.log(result);
+        })*/
+        updater.updateWorkitems('_AaqqEpD0EeWXese5nM0f4w', function (err) {
+            if (err)
+                console.log("failed");
+            else
+                console.log("successfully");
+        })
     }
 });
 

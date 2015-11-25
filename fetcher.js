@@ -3,7 +3,8 @@
  * Fetch resources from the RTC server
  */
 var fs = require('fs'),
-    authenticate = require('./authenticate.js');
+    authenticate = require('./authenticate.js'),
+    Project = require('./models/project.js').Project;
 
 function Fetcher(request, rootUrl, username, password) {
     this.rootUrl = rootUrl;
@@ -18,12 +19,13 @@ module.exports = Fetcher;
 
 Fetcher.prototype.auth = function (callback) {
     if (!this.hasAuthed) {
+        var self = this;
         authenticate(this.request, this.rootUrl, this.username, this.password, function (err) {
             if (err) {
                 console.log("Login failed!");
                 callback(err);
             } else {
-                this.hasAuthed = true;
+                self.hasAuthed = true;
                 callback(null);
             }
         });
@@ -42,7 +44,7 @@ Fetcher.prototype.getXml = function (url, callback) {
         if (err) {
             return callback(err);
         } else {
-            return callback(null, res);
+            return callback(null, res.body);
         }
     });
 };
@@ -59,29 +61,42 @@ Fetcher.prototype.getJson = function (url, callback) {
         if (err) {
             return callback(err);
         } else {
-            return callback(null, res);
+            return callback(null, res.body);
         }
     });
 };
 
 //get the projects
 Fetcher.prototype.getProjects = function (callback) {
-    var that = this;
+    var self = this;
     this.getJson(this.rootServicesUrl, function (err, res) {
         if (err) {
             return callback(err);
         }
-        var rootServices = JSON.parse(res.body);
-        var projectsUrl = rootServices["https://opentechtest.chinacloudapp.cn:9443/jazz/rootservices"]
+        var rootServices = JSON.parse(res);
+        var projectsUrl = rootServices[self.rootServicesUrl]
             ["http://open-services.net/xmlns/cm/1.0/cmServiceProviders"][0].value;
         console.log("Projects Url: " + projectsUrl);
         //this dose not point to Fetcher obj;
-        //instead we save this to that.
-        that.getXml(projectsUrl, function (err, res) {
+        //instead we save this to self.
+        self.getXml(projectsUrl, function (err, res) {
             if (err) {
                 return callback(err);
             }
-            return callback(null, res.body);
+            return callback(null, res);
+        });
+    });
+};
+
+Fetcher.prototype.getWorkitemsJson = function (projectUuid, callback) {
+    var self = this;
+    Project.findOne({ uuid: projectUuid }, 'workitemUrl', function (err, project) {
+        if (err)
+            return callback("GetWorkitemsJson error: " + err);
+        self.getJson(project.workitemUrl, function (err, res) {
+            if (err)
+                return callback("GetWorkitemsJson error: " + err);
+            callback(null, res);
         });
     });
 };

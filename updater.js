@@ -4,7 +4,9 @@
 var Fetcher = require('./fetcher.js'),
     mongoose = require('mongoose'),
     Parser = require('./parsers/parser.js'),
-    Project = require('./models/project.js').Project;
+    Project = require('./models/project.js').Project,
+    WorkItem = require('./models/workitem.js').Workitem,
+    async = require('async');
 
 
 function Updater(request, rootUrl, username, password) {
@@ -17,60 +19,94 @@ function Updater(request, rootUrl, username, password) {
 
 module.exports = Updater;
 
-Updater.prototype.authenticate = function(callback) {
+Updater.prototype.authenticate = function (callback) {
     this.fetcher.auth(callback);
 };
 
-Updater.prototype.updateProjects = function(callback) {
+Updater.prototype.updateProjects = function (callback) {
     var fetcher = this.fetcher;
-    if (fetcher.hasAuthed) {
+    if (!fetcher.hasAuthed) {
         return callback('Has not been authenticated, please auth first!');
     }
-    fetcher.getProjects(function(err, projectsXml) {
-        if (err) {
-            callback("Fetch projectsXml failed!");
-        } else {
-            console.log(projectsXml);
+    async.waterfall([
+        function (callback) {
+            fetcher.getProjects(function (err, projectsXml) {
+                if (err)
+                    return callback("Can't get projectsXml: " + err);
+                callback(null, projectsXml);
+            })
+        },
+        function (projectsXml, callback) {
             Parser.parseProjectsXml(projectsXml, function (err, projects) {
-                if (err) {
-                    console.log("Parse Project xml error: " + err);
-                    callback("Parse Project xml error: " + err);
-                } else {
-                    for (var i = 0; i < projects.length; ++i) {
-                        //pay attention to the loop variable i, fix the bug!
-                        //when the findOne callback func be called, the i will have changed!.
-                        var curProject = projects[i];
-                        var projectServiceUrl = curProject.services;
-                        fetcher.getXml(projectServiceUrl, function(err, res) {
-                           if (err) {
-                                callback("get ProjectServiceXml error: " + err);
-                           } else {
-                               Parser.parseServiceXml(res.body, function(err, workitemUrl) {
-                                   if (err) {
-                                       callback("Parse service xml error: " + err);
-                                   } else {
-                                       curProject.workitemUrl = workitemUrl;
-                                       Project.findOne({uuid: curProject["uuid"]}, function (err, result) {
-                                           if (!err && !result) {
-                                               curProject.save(function (err) {
-                                                   if (err) {
-                                                       console.log(err);
-                                                   } else {
-                                                       console.log(curProject);
-                                                   }
-                                               });
-                                           } else {
-                                               console.log(err);
-                                           }
-                                       });
-
-                                   }
-                               });
-                           }
-                        });
-                    }
-                }
+                if (err)
+                    return callback("Parsed projectsXml Error: " + err);
+                callback(null, projects);
+            })
+        },
+        function (projects, callback) {
+            async.forEachLimit(projects, 5, function (project, callback) {
+                var update = { title: project.title, details: project.details,
+                    services: project.services, workitemUrl: project.workitemUrl };
+                Project.findOneAndUpdate({ uuid: project.uuid }, update, { upsert: true }, function (err) {
+                    if (err)
+                        return callback("Update or Insert project into DB Error: " + err);
+                    callback(null);
+                });
+            }, function (err) {
+               if (err)
+                   return callback(err);
+               callback(null);
             });
         }
+    ], function (err) {
+        if (err)
+            console.log(err);
+        else
+            console.log("update projects successfully");
+    });
+};
+
+Updater.prototype.updateWorkitems = function (projectUuid, callback) {
+    var fetcher = this.fetcher;
+    if (!fetcher.hasAuthed) {
+        return callback('Has not been authenticated, please auth first!');
+    }
+
+    async.waterfall([
+        //get workitems json from the server
+        function (callback) {
+            fetcher.getWorkitemsJson(projectUuid, function (err, workitemsJson) {
+                if (err)
+                    return callback(err);
+                callback(null, workitemsJson);
+            });
+        },
+        //parse the workitems json 
+        function (workitemsJson, callback) {
+            Parser.parseWorkitemsJson(workitemsJson, fetcher, function (err, workitems) {
+                if (err)
+                    return callback(err);
+                callback(null, workitems);
+            })
+        },
+        //save the parsed workitems to db
+        function (workitems, callback) {
+            async.forEachLimit(workitems, 10, function (workitem, callback) {
+                var conditions = { projectUuid: workitem.projectUuid, id: workitem.id };
+                WorkItem.findOneAndUpdate(conditions, workitem, { upsert: true }, function (err) {
+                    if (err)
+                        return callback(err);
+                    callback(null);
+                });
+            }, function (err) {
+                if (err)
+                    return callback(err);
+                callback(null);
+            });
+        }
+    ], function (err) {
+        if (err)
+            return callback(err);
+        callback(null);
     });
 };
