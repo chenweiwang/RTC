@@ -44,10 +44,19 @@ updater.authenticate(function (err) {
         })*/
         updater.updateWorkitems('_AaqqEpD0EeWXese5nM0f4w', function (err) {
             if (err)
-                console.log("failed");
+                console.log("update workitems failed: " + err);
             else
                 console.log("successfully");
-        })
+        });
+
+       /* updater.updateProjects(function (err) {
+           if (err) {
+               console.log("update project failed: " + err);
+           } else {
+
+           }
+        });*/
+
     }
 });
 

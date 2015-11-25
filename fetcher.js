@@ -93,6 +93,8 @@ Fetcher.prototype.getWorkitemsJson = function (projectUuid, callback) {
     Project.findOne({ uuid: projectUuid }, 'workitemUrl', function (err, project) {
         if (err)
             return callback("GetWorkitemsJson error: " + err);
+        if (!project)
+            return callback("Error: the Project " + projectUuid + " did not exist");
         self.getJson(project.workitemUrl, function (err, res) {
             if (err)
                 return callback("GetWorkitemsJson error: " + err);

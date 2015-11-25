@@ -5,7 +5,7 @@ var mongoose = require('mongoose'),
     Schema = mongoose.Schema;
 
 var workitemSchema = new Schema({
-    projectUuid: { type: String, require: true, trim: true, index: { unique: true } },
+    projectUuid: { type: String, require: true, trim: true },
     id: { type: Number, require: true, trim: true, index: { unique: true } },
     type: { title: {type: String, trim: true }, identifier: { type: String, trim: true },  url: { type: String, trim: true } },
     filedAgainst: { title: { type: String }, url: { type: String, trim: true } },
