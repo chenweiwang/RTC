@@ -14,7 +14,7 @@ var workitemSchema = new Schema({
     createdTime: { type: Date },
     lastModifiedTime: { type: Date },
     title: { type: String },
-    decription: { type: String },
+    description: { type: String },
     priority: { title: { type: String }, url: { type: String, trim: true } },
     severity: { title: { type: String }, url: { type: String, trim: true } },
     commentsUrl: { type: String, trim: true },

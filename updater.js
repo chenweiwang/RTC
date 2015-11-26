@@ -66,6 +66,28 @@ Updater.prototype.updateProjects = function (callback) {
     });
 };
 
+Updater.prototype.updateAllWorkitems = function (callback) {
+    var self = this;
+    Project.find({ }, 'uuid', function (err, results) {
+        if (err) {
+            return callback(err);
+        }
+
+        async.forEachLimit(results, 4, function (project, callback) {
+            self.updateWorkitems(project.uuid, function (err) {
+                if (err)
+                    return callback(err);
+                callback(null);
+            });
+        }, function (err) {
+            if (err)
+                return callback(err);
+            callback(null);
+        });
+    });
+};
+
+
 Updater.prototype.updateWorkitems = function (projectUuid, callback) {
     var fetcher = this.fetcher;
     if (!fetcher.hasAuthed) {
@@ -93,7 +115,25 @@ Updater.prototype.updateWorkitems = function (projectUuid, callback) {
         function (workitems, callback) {
             async.forEachLimit(workitems, 10, function (workitem, callback) {
                 var conditions = { projectUuid: workitem.projectUuid, id: workitem.id };
-                WorkItem.findOneAndUpdate(conditions, workitem, { upsert: true }, function (err) {
+                var updates = {
+                    projectUuid: workitem.projectUuid,
+                    id: workitem.id,
+                    type: workitem.type,
+                    filedAgainst: workitem.filedAgainst,
+                    ownedBy: workitem.ownedBy,
+                    createdBy: workitem.createdBy,
+                    createdTime: workitem.createdTime,
+                    lastModifiedTime: workitem.lastModifiedTime,
+                    title: workitem.title,
+                    description: workitem.description,
+                    priority: workitem.priority,
+                    severity: workitem.severity,
+                    commentsUrl: workitem.commentsUrl,
+                    subscribersUrl: workitem.subscribersUrl,
+                    plannedFor: workitem.plannedFor,
+                    dueDate: workitem.dueDate
+                };
+                WorkItem.findOneAndUpdate(conditions, updates, { upsert: true }, function (err) {
                     if (err)
                         return callback(err);
                     callback(null);

@@ -42,13 +42,19 @@ updater.authenticate(function (err) {
         /*updater.updateProjects(function (err, result) {
             console.log(result);
         })*/
-        updater.updateWorkitems('_AaqqEpD0EeWXese5nM0f4w', function (err) {
+        /*updater.updateWorkitems('_AaqqEpD0EeWXese5nM0f4w', function (err) {
             if (err)
                 console.log("update workitems failed: " + err);
             else
                 console.log("successfully");
+        });*/
+        updater.updateAllWorkitems(function (err) {
+           if (err) {
+               console.log("failed: " + err);
+           } else {
+               console.log("successfully");
+           }
         });
-
        /* updater.updateProjects(function (err) {
            if (err) {
                console.log("update project failed: " + err);
