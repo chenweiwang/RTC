@@ -4,14 +4,15 @@
 var Fetcher = require('./fetcher.js'),
     mongoose = require('mongoose'),
     Parser = require('./parsers/parser.js'),
+    newRequest = require('./newRequest.js'),
     Project = require('./models/project.js').Project,
     WorkItem = require('./models/workitem.js').Workitem,
     async = require('async');
 
 
-function Updater(request, rootUrl, username, password) {
+function Updater(rootUrl, username, password) {
     this.rootUrl = rootUrl;
-    this.request = request;
+    this.request = newRequest();
     this.username = username;
     this.password = password;
     this.fetcher = new Fetcher(request, rootUrl, username, password);

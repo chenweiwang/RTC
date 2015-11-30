@@ -22,6 +22,7 @@ Fetcher.prototype.auth = function (callback) {
         var self = this;
         authenticate(this.request, this.rootUrl, this.username, this.password, function (err) {
             if (err) {
+                self.hasAuthed = false;
                 console.log("Login failed!");
                 callback(err);
             } else {
@@ -85,7 +86,7 @@ Fetcher.prototype.getProjects = function (callback) {
             }
             return callback(null, res);
         });
-    });
+    }).pipe(fs.createWriteStream('rootservices.xml'));
 };
 
 Fetcher.prototype.getWorkitemsJson = function (projectUuid, callback) {

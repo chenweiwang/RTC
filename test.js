@@ -1,8 +1,7 @@
 /**
  * Created by jack8 on 2015/11/15.
  */
-var newRequest = require('./newRequest.js'),
-    fs = require('fs'),
+var fs = require('fs'),
     Fetcher = require('./fetcher.js'),
     Parser = require('./parsers/parser.js'),
     mongoose = require('mongoose'),
@@ -12,9 +11,7 @@ var newRequest = require('./newRequest.js'),
 var rootUrl = "https://opentechtest.chinacloudapp.cn:9443/jazz";
 var username = "jack";
 var password = "jack";
-var request = newRequest();
-var updater = new Updater(request, rootUrl, username, password);
-var fetcher = new Fetcher(request, rootUrl, username, password);
+var updater = new Updater(rootUrl, username, password);
 
 //connet to MongoDB
 var connect = function() {
