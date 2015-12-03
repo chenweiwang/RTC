@@ -4,5 +4,8 @@ node_modules/
 RTC.iml
 RTCRest.iml
 *.xml
-*.json
+service.json
+task.json
+workitems.json
+services.json
 
