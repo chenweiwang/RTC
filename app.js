@@ -4,13 +4,12 @@ var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
-var routes = require('./routes/index');
-var users = require('./routes/users');
 var mongoose = require('mongoose');
 var session = require('express-session');
 var passport = require('passport');
 var configPassport = require('./config/passport.js');
 var settings = require('./config/settings.js');
+var routes = require('./routes/routes.js');
 
 var app = express();
 
@@ -33,6 +32,8 @@ app.use(session({ secret: 'ibmrtcmiddleware'}));
 app.use(passport.initialize());
 app.use(passport.session());
 
+routes(app, passport);
+
 //connet to MongoDB
 var connect = function() {
     var options = { server: { socketOptions: { keepAlive: 1 } } };
@@ -44,8 +45,6 @@ mongoose.connection.on('error', console.log);
 //try to reconnect to mongodb when disconnected
 mongoose.connection.on('disconnected', connect);
 
-app.use('/', routes);
-app.use('/users', users);
 
 
 // catch 404 and forward to error handler

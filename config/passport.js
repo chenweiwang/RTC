@@ -4,8 +4,8 @@
 var LocalStrategy = require('passport-local').Strategy,
     User = require('../models/user.js').User,
     settings = require('./settings.js'),
-    request = require('./newRequest.js')(),
-    Updater = require('./updater.js');
+    request = require('../newRequest.js')(),
+    Updater = require('../updater.js');
 
 
 var configPassport = function(passport) {
@@ -45,3 +45,4 @@ var configPassport = function(passport) {
         }
     ));
 };
+module.exports = configPassport;
