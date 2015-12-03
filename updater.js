@@ -15,7 +15,7 @@ function Updater(rootUrl, username, password) {
     this.request = newRequest();
     this.username = username;
     this.password = password;
-    this.fetcher = new Fetcher(request, rootUrl, username, password);
+    this.fetcher = new Fetcher(this.request, rootUrl, username, password);
 }
 
 module.exports = Updater;
