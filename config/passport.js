@@ -33,13 +33,30 @@ var configPassport = function(passport) {
                     return done(err);
                 }
 
-                User.findOneAndUpdate({ username: username }, { password: password },
-                    { upsert: true }, function (err) {
+                User.findOne({ username: username }, function (err, user) {
                     if (err) {
                         return done(err);
                     }
-                    var user = { username: username, password:password };
-                    done(null, user);
+
+                    if (user) {
+                        if (user.password != password) {
+                            User.Update({ username: username }, { password: password }, function (err) {
+                                if (err)
+                                    console.log('Update password of user(' + username +') failed');
+                            });
+                            user.password = password;
+                        }
+                        done(null, user);
+                    } else {
+                        var newUser = new User();
+                        newUser.username = username;
+                        newUser.password = password;
+                        newUser.save(function (err) {
+                            if (err)
+                                console.log('Save new user(' + username + ') failed');
+                        });
+                        done(null, newUser);
+                    }
                 });
             });
         }
