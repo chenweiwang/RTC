@@ -86,7 +86,7 @@ Fetcher.prototype.getProjects = function (callback) {
             }
             return callback(null, res);
         });
-    }).pipe(fs.createWriteStream('rootservices.xml'));
+    });
 };
 
 Fetcher.prototype.getWorkitemsJson = function (projectUuid, callback) {

@@ -17,7 +17,7 @@ var workitemSchema = new Schema({
     description: { type: String },
     priority: { title: { type: String }, url: { type: String, trim: true } },
     severity: { title: { type: String }, url: { type: String, trim: true } },
-    commentsUrl: { type: String, trim: true },
+    commentsUrl: { type: [String], trim: true },
     subscribersUrl: { type: String, trim: true },
     plannedFor: { title: { type: String }, url: { type: String, trim: true } },
     dueDate: { type: Date }

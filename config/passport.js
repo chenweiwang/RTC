@@ -39,18 +39,18 @@ var configPassport = function(passport) {
                     }
 
                     if (user) {
-                        if (user.password != password) {
-                            User.Update({ username: username }, { password: password }, function (err) {
+                        if (!user.validPassword(password)) {
+                            User.Update({ username: username }, { password: user.generateHash(password) }, function (err) {
                                 if (err)
                                     console.log('Update password of user(' + username +') failed');
                             });
-                            user.password = password;
+                            user.password = user.generateHash(password);
                         }
                         done(null, user);
                     } else {
                         var newUser = new User();
                         newUser.username = username;
-                        newUser.password = password;
+                        newUser.password = newUser.generateHash(password);
                         newUser.save(function (err) {
                             if (err)
                                 console.log('Save new user(' + username + ') failed');

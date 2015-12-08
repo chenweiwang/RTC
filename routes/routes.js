@@ -2,7 +2,8 @@
  * Created by v-wajie on 2015/11/30.
  */
 
-var Project = require('../models/project.js').Project;
+var Project = require('../models/project.js').Project,
+    Workitem = require('../models/workitem.js').Workitem;
 
 module.exports = function (app, passport) {
 
@@ -16,6 +17,23 @@ module.exports = function (app, passport) {
                 return res.json(err);
             res.json(projects);
         })
+    });
+
+    app.get('/workitems', isLoggedIn, function (req, res) {
+        var conditions = { };
+        var projectUuid = req.query.uuid;
+        var id = req.query.id;
+        if (projectUuid) {
+            conditions.projectUuid = projectUuid;
+        }
+        if (id) {
+            conditions.id = id;
+        }
+        Workitem.find(conditions, function (err, workitems) {
+            if (err)
+                return res.json(err);
+            res.json(workitems);
+        });
     });
 };
 
