@@ -17,6 +17,9 @@ var app = express();
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
 
+
+
+
 // uncomment after placing your favicon in /public
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
 app.use(logger('dev'));
@@ -27,7 +30,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 //config passport
 configPassport(passport);
-app.use(session({ secret: 'ibmrtcmiddleware', MaxAge: 60*60*24*7 }));
+app.use(session({ secret: 'ibmrtcmiddleware', cookie: { maxAge: 60*60*24*7*1000 } }));
 app.use(passport.initialize());
 app.use(passport.session());
 

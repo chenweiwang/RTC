@@ -151,10 +151,9 @@ exports.parseWorkitemsJson = function (json, fetcher, callback) {
         } else {
             workitem.subscribersUrl = "";
         }
-        if (cur["rtc_cm:comments"].length > 0) {
-            workitem.commentsUrl  = cur["rtc_cm:comments"][0]["oslc_cm:collref"];
-        } else {
-            workitem.commentsUrl = "";
+
+        for (var i = 0; i < cur["rtc_cm:comments"].length; ++i) {
+            workitem.commentsUrl.push(cur["rtc_cm:comments"][0]["rdf:resource"]);
         }
 
         var ownedByUrl = cur["rtc_cm:ownedBy"]["rdf:resource"];

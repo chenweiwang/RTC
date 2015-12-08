@@ -52,11 +52,11 @@ updater.authenticate(function (err) {
                console.log("successfully");
            }
         });
-       /* updater.updateProjects(function (err) {
+        /*updater.updateProjects(function (err) {
            if (err) {
                console.log("update project failed: " + err);
            } else {
-
+               console.log("successfully");
            }
         });*/
 
