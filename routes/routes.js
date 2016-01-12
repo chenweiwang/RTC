@@ -11,7 +11,9 @@ module.exports = function (app, passport) {
         res.json({ authenticated: true });
     });
 
-    app.get('/projects', isLoggedIn, function (req, res) {
+    //TODO 为了测试，关闭了登陆验证
+    //app.get('/projects', isLoggedIn, function (req, res) {
+    app.get('/projects', function (req, res) {
         Project.find({ }, function (err, projects) {
             if (err)
                 return res.json(err);
@@ -19,7 +21,8 @@ module.exports = function (app, passport) {
         })
     });
 
-    app.get('/workitems', isLoggedIn, function (req, res) {
+    //app.get('/workitems', isLoggedIn, function (req, res) {
+    app.get('/workitems', function (req, res) {
         var conditions = { };
         var projectUuid = req.query.uuid;
         var id = req.query.id;

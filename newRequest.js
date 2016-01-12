@@ -7,7 +7,7 @@ var process = require('process'),
 module.exports = function () {
     //to fix the self-signed certificate error
     process.env.NODE_TLS_REJECT_UNAUTHORIZED = 0;
-    //enable cookie manager!
+    //enable cookie manager, set jar = true, and followAllRedirects.
     return request.defaults({jar: true, followAllRedirects: true});
 }
 

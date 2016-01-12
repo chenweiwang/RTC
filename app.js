@@ -17,9 +17,6 @@ var app = express();
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
 
-
-
-
 // uncomment after placing your favicon in /public
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
 app.use(logger('dev'));
@@ -30,6 +27,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 //config passport
 configPassport(passport);
+//TODO 不要使用session,容易造成客户端压力。
 app.use(session({ secret: 'ibmrtcmiddleware', cookie: { maxAge: 60*60*24*7*1000 } }));
 app.use(passport.initialize());
 app.use(passport.session());
@@ -45,6 +43,7 @@ connect();
 
 mongoose.connection.on('error', console.log);
 //try to reconnect to mongodb when disconnected
+//TODO 如果链接失败会一直重新连接，设置一个重连次数，超过次数后就不再尝试。
 mongoose.connection.on('disconnected', connect);
 
 

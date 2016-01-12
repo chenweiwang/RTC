@@ -2,7 +2,6 @@
 .idea/
 node_modules/
 RTC.iml
-RTCRest.iml
 *.xml
 service.json
 task.json
