@@ -147,13 +147,16 @@ exports.parseWorkitemsJson = function (json, fetcher, callback) {
         }
 
         if (cur["rtc_cm:subscribers"].length > 0) {
-            workitem.subscribersUrl = cur["rtc_cm:subscribers"][0]["rdf:resource"];
+            workitem.subscribersUrl.push(cur["rtc_cm:subscribers"][0]["rdf:resource"]);
         } else {
-            workitem.subscribersUrl = "";
+            workitem.subscribersUrl = null;
         }
 
-        for (var i = 0; i < cur["rtc_cm:comments"].length; ++i) {
-            workitem.commentsUrl.push(cur["rtc_cm:comments"][0]["rdf:resource"]);
+        if (cur["rtc_cm:comments"].length > 0) {
+            var firstCommentUrl = cur["rtc_cm:comments"][0]["rdf:resource"];
+            workitem.commentsUrl = firstCommentUrl.substr(0, firstCommentUrl.lastIndexOf('/'));
+        } else {
+            workitem.commentsUrl = null;
         }
 
         var ownedByUrl = cur["rtc_cm:ownedBy"]["rdf:resource"];

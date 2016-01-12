@@ -17,10 +17,17 @@ var workitemSchema = new Schema({
     description: { type: String },
     priority: { title: { type: String }, url: { type: String, trim: true } },
     severity: { title: { type: String }, url: { type: String, trim: true } },
-    commentsUrl: { type: [String], trim: true },
-    subscribersUrl: { type: String, trim: true },
+    commentsUrl: { type: String, trim: true },
+    subscribersUrl: { type: [String], trim: true },
     plannedFor: { title: { type: String }, url: { type: String, trim: true } },
-    dueDate: { type: Date }
+    dueDate: { type: Date },
+    foundIn: { type: String },
+    estimate: { type: Number },
+    timeSpent: { type: Number },
+    businessValue: { type: String, trim: true},
+    risk: { type: String, trim: true },
+    impact: { type: String, trim: true },
+    storyPoint: { type: String, trim: true}
 });
 
 var workitem = mongoose.model('workitem', workitemSchema);
