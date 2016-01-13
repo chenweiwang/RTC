@@ -7,6 +7,7 @@ var Fetcher = require('./fetcher.js'),
     newRequest = require('./newRequest.js'),
     Project = require('./models/project.js').Project,
     WorkItem = require('./models/workitem.js').Workitem,
+    Comment = require('./models/comment.js').Comment,
     async = require('async');
 
 
@@ -89,6 +90,7 @@ Updater.prototype.updateAllWorkitems = function (callback) {
 };
 
 
+
 Updater.prototype.updateWorkitems = function (projectUuid, callback) {
     var fetcher = this.fetcher;
     if (!fetcher.hasAuthed) {
@@ -119,6 +121,7 @@ Updater.prototype.updateWorkitems = function (projectUuid, callback) {
                 var updates = {
                     projectUuid: workitem.projectUuid,
                     id: workitem.id,
+                    tags: workitem.tags,
                     type: workitem.type,
                     filedAgainst: workitem.filedAgainst,
                     ownedBy: workitem.ownedBy,
@@ -156,5 +159,86 @@ Updater.prototype.updateWorkitems = function (projectUuid, callback) {
         if (err)
             return callback(err);
         callback(null);
+    });
+};
+
+Updater.prototype.updateComments = function (projectUuid, workitemId, commentsUrl, callback) {
+    var fetcher = this.fetcher;
+    if (!fetcher.hasAuthed) {
+        return callback('Has not been authenticated, please auth first!');
+    }
+
+    async.waterfall([
+        //get the comments
+        function (callback) {
+            fetcher.getJson(commentsUrl, function (err, json) {
+                if (err)
+                    return callback(err);
+                callback(null, json);
+            })
+        },
+        //parse the comment
+        function (json, callback) {
+            Parser.parseCommentsJson(json, function (err, comments) {
+                if (err)
+                    return callback(err);
+                callback(null, comments);
+            })
+        },
+        //save the parsed comments to db
+        function (comments, callback) {
+            async.forEachLimit(comments, 10, function (comment, callback) {
+                var conditions = {
+                    projectUuid: projectUuid,
+                    workitemId: workitemId,
+                    createdTime: comment.createdTime };
+                var updates = {
+                    projectUuid: projectUuid,
+                    workitemId: workitemId,
+                    description: comment.description,
+                    creator: comment.creator,
+                    createdTime: comment.createdTime
+                };
+                Comment.findOneAndUpdate(conditions, updates, { upsert: true }, function (err) {
+                    if (err)
+                        return callback(err);
+                    callback(null);
+                })
+            }, function (err) {
+                if (err)
+                    return callback(err);
+                callback(null);
+            });
+        }
+    ], function (err) {
+        if (err)
+            return callback(err);
+        callback(null);
+    });
+};
+
+Updater.prototype.updateAllComments = function (callback) {
+    var self = this;
+    WorkItem.find({ }, 'projectUuid id commentsUrl', function (err, workitems) {
+        if (err) {
+            return callback(err);
+        }
+
+        async.forEachLimit(workitems, 4, function (workitem, callback) {
+            if (workitem.commentsUrl != null && workitem.commentsUrl != undefined) {
+                self.updateComments(workitem.projectUuid, workitem.id, workitem.commentsUrl, function (err) {
+                    if (err)
+                        return callback(err);
+                    callback(null);
+                })
+            } else {
+                callback(null);
+            }
+
+        }, function (err) {
+            if (err)
+                return callback(err);
+            callback(null);
+        });
     });
 };

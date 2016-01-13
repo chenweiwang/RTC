@@ -45,13 +45,13 @@ updater.authenticate(function (err) {
             else
                 console.log("successfully");
         });*/
-        updater.updateAllWorkitems(function (err) {
+        /*updater.updateAllWorkitems(function (err) {
            if (err) {
                console.log("failed: " + err);
            } else {
                console.log("successfully");
            }
-        });
+        });*/
         /*updater.updateProjects(function (err) {
            if (err) {
                console.log("update project failed: " + err);
@@ -59,6 +59,13 @@ updater.authenticate(function (err) {
                console.log("successfully");
            }
         })*/
+        updater.updateAllComments(function (err) {
+            if (err) {
+                console.log("update comments failed: " + err)
+            } else {
+                console.log("successfully");
+            }
+        })
     }
 });
 

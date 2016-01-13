@@ -24,6 +24,7 @@ var workitemSchema = new Schema({
     foundIn: { title: { type: String }, url: { type: String, trim: true } },
     estimate: { type: Number },
     timeSpent: { type: Number },
+    tags: { type: String},
     businessValue: { title: { type: String }, url: { type: String, trim: true } },
     risk: { title: { type: String }, url: { type: String, trim: true } },
     impact: { title: { type: String }, url: { type: String, trim: true } },

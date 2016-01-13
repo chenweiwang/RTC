@@ -4,6 +4,7 @@
 var parseString = require('xml2js').parseString,
     Project = require('../models/project.js').Project,
     Workitem = require('../models/workitem.js').Workitem,
+    Comment = require('../models/comment.js').Comment,
     async = require('async');
 
 exports.parseProjectsXml = function(xml, callback) {
@@ -178,6 +179,7 @@ exports.parseWorkitemsJson = function (json, fetcher, callback) {
         workitem.dueDate = cur["rtc_cm:due"];
         workitem.timeSpent = cur["rtc_cm:timeSpent"];
         workitem.estimate = cur["rtc_cm:estimate"];
+        workitem.tags = cur["dc:subject"];
         workitem.type.url = cur["dc:type"]["rdf:resource"];
 
         if (cur["rtc_cm:plannedFor"]) {
@@ -273,4 +275,23 @@ exports.parseWorkitemsJson = function (json, fetcher, callback) {
             return callback(err);
         callback(null, workitems);
     });
+};
+
+
+exports.parseCommentsJson = function (json, callback) {
+    var commentsJson = JSON.parse(json);
+    var comments = [];
+    async.forEachLimit(commentsJson, 5, function (commentJson, callback) {
+        var comment = new Comment();
+        comment.description = commentJson["dc:description"];
+        comment.createdTime = commentJson["dc:created"];
+        var userUrl = commentJson["dc:creator"]["rdf:resource"];
+        comment.creator = userUrl.substr(userUrl.lastIndexOf('/') + 1);
+        comments.push(comment);
+        callback(null);
+    }, function (err) {
+        if (err)
+            return callback(err);
+        callback(null, comments);
+    })
 };
