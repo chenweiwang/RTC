@@ -95,6 +95,66 @@ var parseWorkitemOtherContributes = function (workitem, fetcher, callback) {
                 workitem.severity.title = severity["dc:title"];
                 callback(null);
             });
+        },
+        //get foundin
+        function (callback) {
+            if (!workitem.foundIn.url)
+                return callback(null);
+            fetcher.getJson(workitem.foundIn.url, function (err, json) {
+                if (err)
+                    return callback("Get foundin: " + err);
+                var foundIn = JSON.parse(json);
+                workitem.foundIn.title = foundIn["dc:title"];
+                callback(null);
+            });
+        },
+        //get business value
+        function (callback) {
+            if (!workitem.businessValue.url)
+                return callback(null);
+            fetcher.getJson(workitem.businessValue.url, function (err, json) {
+                if (err)
+                    return callback("Get businessValue: " + err);
+                var value = JSON.parse(json);
+                workitem.businessValue.title = value["dc:title"];
+                callback(null);
+            });
+        },
+        //get risk
+        function (callback) {
+            if (!workitem.risk.url)
+                return callback(null);
+            fetcher.getJson(workitem.risk.url, function (err, json) {
+                if (err)
+                    return callback("Get risk: " + err);
+                var value = JSON.parse(json);
+                workitem.risk.title = value["dc:title"];
+                callback(null);
+            });
+        },
+        //get storyPoint
+        function (callback) {
+            if (!workitem.storyPoint.url)
+                return callback(null);
+            fetcher.getJson(workitem.storyPoint.url, function (err, json) {
+                if (err)
+                    return callback("Get storyPoint: " + err);
+                var value = JSON.parse(json);
+                workitem.storyPoint.title = value["dc:title"];
+                callback(null);
+            });
+        },
+        //get impact
+        function (callback) {
+            if (!workitem.impact.url)
+                return callback(null);
+            fetcher.getJson(workitem.impact.url, function (err, json) {
+                if (err)
+                    return callback("Get impact: " + err);
+                var value = JSON.parse(json);
+                workitem.impact.title = value["dc:title"];
+                callback(null);
+            });
         }
     ], function (err) {
         if (err)
@@ -116,8 +176,10 @@ exports.parseWorkitemsJson = function (json, fetcher, callback) {
         workitem.createdTime = cur["dc:created"];
         workitem.lastModifiedTime = cur["dc:modified"];
         workitem.dueDate = cur["rtc_cm:due"];
-
+        workitem.timeSpent = cur["rtc_cm:timeSpent"];
+        workitem.estimate = cur["rtc_cm:estimate"];
         workitem.type.url = cur["dc:type"]["rdf:resource"];
+
         if (cur["rtc_cm:plannedFor"]) {
             workitem.plannedFor.url = cur["rtc_cm:plannedFor"]["rdf:resource"];
         } else {
@@ -130,6 +192,41 @@ exports.parseWorkitemsJson = function (json, fetcher, callback) {
         } else {
             workitem.filedAgainst.url = null;
             workitem.filedAgainst.title = "Unassigned";
+        }
+
+        if (cur["rtc_cm:foundIn"]) {
+            workitem.foundIn.url = cur["rtc_cm:foundIn"]["rdf:resource"];
+        } else {
+            workitem.foundIn.url = null;
+            workitem.foundIn.title = null;
+        }
+
+        if (cur["rtc_cm:businessvalue"]) {
+            workitem.businessValue.url = cur["rtc_cm:businessvalue"]["rdf:resource"];
+        } else {
+            workitem.businessValue.url = null;
+            workitem.businessValue.title = null;
+        }
+
+        if (cur["rtc_cm:rtc_cm:com.ibm.team.apt.attribute.complexity"]) {
+            workitem.storyPoint.url = cur["rtc_cm:com.ibm.team.apt.attribute.complexity"]["rdf:resource"];
+        } else {
+            workitem.storyPoint.url = null;
+            workitem.storyPoint.title = null;
+        }
+
+        if (cur["rtc_cm:com.ibm.team.rtc.attribute.impact"]) {
+            workitem.impact.url = cur["rtc_cm:com.ibm.team.rtc.attribute.impact"]["rdf:resource"];
+        } else {
+            workitem.impact.url = null;
+            workitem.impact.title = null;
+        }
+
+        if (cur["rtc_cm:risk"]) {
+            workitem.risk.url = cur["rtc_cm:risk"]["rdf:resource"];
+        } else {
+            workitem.risk.url = null;
+            workitem.risk.title = null;
         }
 
         if (cur["oslc_cm:severity"]) {
@@ -146,10 +243,8 @@ exports.parseWorkitemsJson = function (json, fetcher, callback) {
             workitem.severity.title = "Unassigned";
         }
 
-        if (cur["rtc_cm:subscribers"].length > 0) {
-            workitem.subscribersUrl.push(cur["rtc_cm:subscribers"][0]["rdf:resource"]);
-        } else {
-            workitem.subscribersUrl = null;
+        for (var i = 0; i < cur["rtc_cm:subscribers"].length; ++i) {
+            workitem.subscribersUrl.push(cur["rtc_cm:subscribers"][i]["rdf:resource"]);
         }
 
         if (cur["rtc_cm:comments"].length > 0) {

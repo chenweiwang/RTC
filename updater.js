@@ -132,7 +132,14 @@ Updater.prototype.updateWorkitems = function (projectUuid, callback) {
                     commentsUrl: workitem.commentsUrl,
                     subscribersUrl: workitem.subscribersUrl,
                     plannedFor: workitem.plannedFor,
-                    dueDate: workitem.dueDate
+                    dueDate: workitem.dueDate,
+                    foundIn: workitem.foundIn,
+                    estimate: workitem.estimate,
+                    timeSpent: workitem.timeSpent,
+                    businessValue: workitem.businessValue,
+                    risk: workitem.risk,
+                    impact: workitem.impact,
+                    storyPoint: workitem.storyPoint
                 };
                 WorkItem.findOneAndUpdate(conditions, updates, { upsert: true }, function (err) {
                     if (err)

@@ -21,13 +21,13 @@ var workitemSchema = new Schema({
     subscribersUrl: { type: [String], trim: true },
     plannedFor: { title: { type: String }, url: { type: String, trim: true } },
     dueDate: { type: Date },
-    foundIn: { type: String },
+    foundIn: { title: { type: String }, url: { type: String, trim: true } },
     estimate: { type: Number },
     timeSpent: { type: Number },
-    businessValue: { type: String, trim: true},
-    risk: { type: String, trim: true },
-    impact: { type: String, trim: true },
-    storyPoint: { type: String, trim: true}
+    businessValue: { title: { type: String }, url: { type: String, trim: true } },
+    risk: { title: { type: String }, url: { type: String, trim: true } },
+    impact: { title: { type: String }, url: { type: String, trim: true } },
+    storyPoint: { title: { type: String }, url: { type: String, trim: true } }
 });
 
 var workitem = mongoose.model('workitem', workitemSchema);

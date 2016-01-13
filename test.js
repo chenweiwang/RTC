@@ -58,8 +58,7 @@ updater.authenticate(function (err) {
            } else {
                console.log("successfully");
            }
-        });*/
-
+        })*/
     }
 });
 
