@@ -3,7 +3,8 @@
  */
 
 var Project = require('../models/project.js').Project,
-    Workitem = require('../models/workitem.js').Workitem;
+    Workitem = require('../models/workitem.js').Workitem,
+    Comment = require('../models/comment.js').Comment;
 
 module.exports = function (app, passport) {
 
@@ -38,6 +39,19 @@ module.exports = function (app, passport) {
             res.json(workitems);
         });
     });
+
+    app.get('/comments/:workitemId', function (req, res) {
+        var conditions = { };
+        var workitemId = req.params.workitemId;
+        if (workitemId) {
+            conditions.workitemId = workitemId;
+        }
+        Comment.find(conditions, function (err, comments) {
+            if (err)
+                return res.json(err);
+            res.json(comments);
+        })
+    })
 };
 
 
