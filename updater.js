@@ -8,6 +8,7 @@ var Fetcher = require('./fetcher.js'),
     Project = require('./models/project.js').Project,
     WorkItem = require('./models/workitem.js').Workitem,
     Comment = require('./models/comment.js').Comment,
+    User = require('./models/user.js').User,
     async = require('async');
 
 
@@ -21,11 +22,18 @@ function Updater(rootUrl, username, password) {
 
 module.exports = Updater;
 
+/**
+ * Using basic form authentication.
+ * */
 Updater.prototype.authenticate = function (callback) {
     this.fetcher.auth(callback);
 };
 
+/**
+ * Update all projects for the current User @username.
+ * */
 Updater.prototype.updateProjects = function (callback) {
+    var self = this;
     var fetcher = this.fetcher;
     if (!fetcher.hasAuthed) {
         return callback('Has not been authenticated, please auth first!');
@@ -57,7 +65,22 @@ Updater.prototype.updateProjects = function (callback) {
             }, function (err) {
                if (err)
                    return callback(err);
-               callback(null);
+               callback(null, projects);
+            });
+        },
+        function (projects, callback) {
+            if (projects.length <= 0) {
+                callback(null);
+            }
+            var projectUuids = [];
+            for (var i = 0; i < projects.length; ++i) {
+                projectUuids.push(projects[i].uuid);
+            }
+            User.findOneAndUpdate( { username: self.username }, { projectUuids: projectUuids }, function (err) {
+                if (err) {
+                    return callback(err);
+                }
+                callback(null);
             });
         }
     ], function (err) {
@@ -68,6 +91,9 @@ Updater.prototype.updateProjects = function (callback) {
     });
 };
 
+/**
+ * Update all workitems for all projects in db.
+ * */
 Updater.prototype.updateAllWorkitems = function (callback) {
     var self = this;
     Project.find({ }, 'uuid', function (err, results) {
@@ -75,7 +101,7 @@ Updater.prototype.updateAllWorkitems = function (callback) {
             return callback(err);
         }
 
-        async.forEachLimit(results, 4, function (project, callback) {
+        async.forEachLimit(results, 5, function (project, callback) {
             self.updateWorkitems(project.uuid, function (err) {
                 if (err)
                     return callback(err);
@@ -147,6 +173,10 @@ Updater.prototype.parseAndStoreWorkitem = function (json, callback) {
     });
 };
 
+/**
+ * Update all workitems of the specified project.
+ * @param projectUuid, the project id which needs to update workitems.
+ * */
 Updater.prototype.updateWorkitems = function (projectUuid, callback) {
     var fetcher = this.fetcher;
     var self = this;
@@ -188,6 +218,11 @@ Updater.prototype.updateWorkitems = function (projectUuid, callback) {
     });
 };
 
+/**
+ * Update comments for the workitem whose id is @param workitemId.
+ * @param projectUuid, and the
+ * @param workitemId together to identify comments
+ * */
 Updater.prototype.updateComments = function (projectUuid, workitemId, commentsUrl, callback) {
     var fetcher = this.fetcher;
     if (!fetcher.hasAuthed) {
@@ -243,6 +278,9 @@ Updater.prototype.updateComments = function (projectUuid, workitemId, commentsUr
     });
 };
 
+/**
+ * Save or Update the workitem which is well parsed.
+ * */
 Updater.prototype.saveOrUpdateWorkitem = function (workitem, callback) {
     var conditions = { projectUuid: workitem.projectUuid, id: workitem.id };
     var updates = {
@@ -278,14 +316,19 @@ Updater.prototype.saveOrUpdateWorkitem = function (workitem, callback) {
     });
 };
 
+/**
+ * Update all workitem's comments.
+ * */
 Updater.prototype.updateAllComments = function (callback) {
     var self = this;
+    //select workitem id from db.
     WorkItem.find({ }, 'projectUuid id commentsUrl', function (err, workitems) {
         if (err) {
             return callback(err);
         }
-
+        //for each workitem, get its comment.
         async.forEachLimit(workitems, 4, function (workitem, callback) {
+            //filter the illegal commentsUrl.
             if (workitem.commentsUrl != null && workitem.commentsUrl != undefined) {
                 self.updateComments(workitem.projectUuid, workitem.id, workitem.commentsUrl, function (err) {
                     if (err)

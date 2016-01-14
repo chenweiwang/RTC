@@ -1,5 +1,6 @@
 /**
  * Created by jack8 on 2015/11/15.
+ * Parse project, workitem, and comment json.
  */
 var parseString = require('xml2js').parseString,
     Project = require('../models/project.js').Project,
@@ -7,6 +8,10 @@ var parseString = require('xml2js').parseString,
     Comment = require('../models/comment.js').Comment,
     async = require('async');
 
+
+/**
+ * Parse the projectsXml to get projects.
+ * */
 exports.parseProjectsXml = function(xml, callback) {
     parseString(xml, function(err, result) {
         if (err) {
@@ -34,7 +39,13 @@ exports.parseProjectsXml = function(xml, callback) {
     });
 };
 
+/**
+ * Because some attributes of workitem have nested url, we must track the url to get the
+ * corresponding attribute.
+ *
+ * */
 var parseWorkitemOtherContributes = function (workitem, fetcher, callback) {
+    //attributes are independent, so use async parallel.
     async.parallel([
         //get workitem type
         function (callback) {
@@ -164,6 +175,9 @@ var parseWorkitemOtherContributes = function (workitem, fetcher, callback) {
     });
 }
 
+/**
+ * Parse the workitems json
+ * */
 exports.parseWorkitemsJson = function (json, fetcher, callback) {
     var self = this;
     var workitemsJson = JSON.parse(json);
@@ -183,6 +197,9 @@ exports.parseWorkitemsJson = function (json, fetcher, callback) {
     });
 };
 
+/**
+ * Parse workitem json.
+ * */
 exports.parseWorkitemJson = function (json, fetcher, callback) {
     var cur = json;
     var workitem = new Workitem();
@@ -280,6 +297,7 @@ exports.parseWorkitemJson = function (json, fetcher, callback) {
     workitem.createdBy.url = createdByUrl;
     workitem.createdBy.name = createdByUrl.substr(createdByUrl.lastIndexOf('/') + 1);
 
+    //for attributes that needs to further parse.
     parseWorkitemOtherContributes(workitem, fetcher, function (err) {
         if (err)
             return callback(err);
@@ -287,11 +305,13 @@ exports.parseWorkitemJson = function (json, fetcher, callback) {
     });
 };
 
-
+/**
+ * Parse comments json.
+ * */
 exports.parseCommentsJson = function (json, callback) {
     var commentsJson = JSON.parse(json);
     var comments = [];
-    async.forEachLimit(commentsJson, 5, function (commentJson, callback) {
+    async.forEachLimit(commentsJson, 10, function (commentJson, callback) {
         var comment = new Comment();
         comment.description = commentJson["dc:description"];
         comment.createdTime = commentJson["dc:created"];

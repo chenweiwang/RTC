@@ -6,6 +6,7 @@ var fs = require('fs'),
     Parser = require('./parsers/parser.js'),
     mongoose = require('mongoose'),
     Project = require('./models/project.js').Project,
+    User = require('./models/user.js').User;
     Updater = require('./updater.js');
 
 var rootUrl = "https://opentechtest.chinacloudapp.cn:9443/jazz";
@@ -23,6 +24,18 @@ connect();
 mongoose.connection.on('error', console.log);
 //try to reconnect to mongodb when disconnected
 mongoose.connection.on('disconnected', connect);
+
+User.find({ username: username }, function (err, user) {
+    if (err) {
+        console.log("Find user: " + username + " error.");
+    }
+    if (user.length <= 0) {
+        var newUser = new User();
+        newUser.password = password;
+        newUser.username = username;
+        newUser.save();
+    }
+});
 
 updater.authenticate(function (err) {
     if (err) {
@@ -52,16 +65,13 @@ updater.authenticate(function (err) {
                console.log("successfully");
            }
         });*/
-        var set = new Set();
-        set.add('sfs');
-        console.log(set.has('sfs'));
-/*        updater.updateProjects(function (err) {
+        updater.updateProjects(function (err) {
            if (err) {
                console.log("update project failed: " + err);
            } else {
                console.log("successfully");
            }
-        })*/
+        })
         /*updater.updateAllComments(function (err) {
             if (err) {
                 console.log("update comments failed: " + err)

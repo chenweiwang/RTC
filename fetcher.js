@@ -17,6 +17,10 @@ function Fetcher(request, rootUrl, username, password) {
 
 module.exports = Fetcher;
 
+
+/**
+ * The auth function, delegate the actual authentication to authenticate.js
+ * */
 Fetcher.prototype.auth = function (callback) {
     if (!this.hasAuthed) {
         var self = this;
@@ -33,6 +37,9 @@ Fetcher.prototype.auth = function (callback) {
     }
 };
 
+/**
+ * A simple function to get xml from the provided url.
+ */
 Fetcher.prototype.getXml = function (url, callback) {
     var requset = this.request;
     var options = {
@@ -50,6 +57,9 @@ Fetcher.prototype.getXml = function (url, callback) {
     });
 };
 
+/**
+ * A simple function to get json from the provided url.
+ * */
 Fetcher.prototype.getJson = function (url, callback) {
     var requset = this.request;
     var options = {
@@ -67,7 +77,9 @@ Fetcher.prototype.getJson = function (url, callback) {
     });
 };
 
-//get the projects
+/***
+ *Get projects Xml.
+ */
 Fetcher.prototype.getProjects = function (callback) {
     var self = this;
     this.getJson(this.rootServicesUrl, function (err, res) {
@@ -89,6 +101,11 @@ Fetcher.prototype.getProjects = function (callback) {
     });
 };
 
+/**
+ * Get the workitems json. First query the project collection from db to
+ * obtain the workitemUrl. second, get the workitems json according to that
+ * url.
+ * */
 Fetcher.prototype.getWorkitemsJson = function (projectUuid, callback) {
     var self = this;
     Project.findOne({ uuid: projectUuid }, 'workitemUrl', function (err, project) {
