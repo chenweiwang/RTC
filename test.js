@@ -45,14 +45,17 @@ updater.authenticate(function (err) {
             else
                 console.log("successfully");
         });*/
-       /* updater.updateAllWorkitems(function (err) {
+        /*updater.updateAllWorkitems(function (err) {
            if (err) {
                console.log("failed: " + err);
            } else {
                console.log("successfully");
            }
         });*/
-      /*  updater.updateProjects(function (err) {
+        var set = new Set();
+        set.add('sfs');
+        console.log(set.has('sfs'));
+/*        updater.updateProjects(function (err) {
            if (err) {
                console.log("update project failed: " + err);
            } else {

@@ -89,24 +89,9 @@ Updater.prototype.updateAllWorkitems = function (callback) {
     });
 };
 
-
-
-Updater.prototype.updateWorkitems = function (projectUuid, callback) {
-    var fetcher = this.fetcher;
-    if (!fetcher.hasAuthed) {
-        return callback('Has not been authenticated, please auth first!');
-    }
-
+Updater.prototype.parseAndStoreWorkitem = function (json, callback) {
     async.waterfall([
-        //get workitems json from the server
-        function (callback) {
-            fetcher.getWorkitemsJson(projectUuid, function (err, workitemsJson) {
-                if (err)
-                    return callback(err);
-                callback(null, workitemsJson);
-            });
-        },
-        //parse the workitems json 
+        //parse the workitems json
         function (workitemsJson, callback) {
             Parser.parseWorkitemsJson(workitemsJson, fetcher, function (err, workitems) {
                 if (err)
@@ -149,6 +134,47 @@ Updater.prototype.updateWorkitems = function (projectUuid, callback) {
                         return callback(err);
                     callback(null);
                 });
+            }, function (err) {
+                if (err)
+                    return callback(err);
+                callback(null);
+            });
+        }
+    ], function (err) {
+        if (err)
+            return callback(err);
+        callback(null);
+    });
+};
+
+Updater.prototype.updateWorkitems = function (projectUuid, callback) {
+    var fetcher = this.fetcher;
+    var self = this;
+    if (!fetcher.hasAuthed) {
+        return callback('Has not been authenticated, please auth first!');
+    }
+
+    async.waterfall([
+        //get workitems json from the server
+        function (callback) {
+            fetcher.getWorkitemsJson(projectUuid, function (err, workitemsJson) {
+                if (err)
+                    return callback(err);
+                callback(null, workitemsJson);
+            });
+        },
+        //parse the workitems json
+        function (workitemsJson, callback) {
+            Parser.parseWorkitemsJson(workitemsJson, fetcher, function (err, workitems) {
+                if (err)
+                    return callback(err);
+                callback(null, workitems);
+            })
+        },
+        //save the parsed workitems to db
+        function (workitems, callback) {
+            async.forEachLimit(workitems, 10, function (workitem, callback) {
+                self.saveOrUpdateWorkitem(workitem, callback);
             }, function (err) {
                 if (err)
                     return callback(err);
@@ -211,6 +237,41 @@ Updater.prototype.updateComments = function (projectUuid, workitemId, commentsUr
             });
         }
     ], function (err) {
+        if (err)
+            return callback(err);
+        callback(null);
+    });
+};
+
+Updater.prototype.saveOrUpdateWorkitem = function (workitem, callback) {
+    var conditions = { projectUuid: workitem.projectUuid, id: workitem.id };
+    var updates = {
+        projectUuid: workitem.projectUuid,
+        id: workitem.id,
+        tags: workitem.tags,
+        type: workitem.type,
+        filedAgainst: workitem.filedAgainst,
+        ownedBy: workitem.ownedBy,
+        createdBy: workitem.createdBy,
+        createdTime: workitem.createdTime,
+        lastModifiedTime: workitem.lastModifiedTime,
+        title: workitem.title,
+        description: workitem.description,
+        priority: workitem.priority,
+        severity: workitem.severity,
+        commentsUrl: workitem.commentsUrl,
+        subscribersUrl: workitem.subscribersUrl,
+        plannedFor: workitem.plannedFor,
+        dueDate: workitem.dueDate,
+        foundIn: workitem.foundIn,
+        estimate: workitem.estimate,
+        timeSpent: workitem.timeSpent,
+        businessValue: workitem.businessValue,
+        risk: workitem.risk,
+        impact: workitem.impact,
+        storyPoint: workitem.storyPoint
+    };
+    WorkItem.findOneAndUpdate(conditions, updates, { upsert: true }, function (err) {
         if (err)
             return callback(err);
         callback(null);
