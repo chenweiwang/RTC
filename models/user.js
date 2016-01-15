@@ -8,7 +8,8 @@ var bcrypt = require('bcrypt-nodejs'),
 var userSchema = new Schema({
     username: { type: String, require: true },
     password: { type: String, require: true },
-    projectUuids: { type: [String] }
+    projectUuids: { type: [String] },
+    server: { host: { type: String, trim: true }, port: { type: Number }, context: { type: String } }
 });
 
 

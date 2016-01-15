@@ -80,14 +80,16 @@ Updater.prototype.updateProjects = function (callback) {
                 if (err) {
                     return callback(err);
                 }
-                callback(null);
+                callback(null, projects);
             });
         }
-    ], function (err) {
-        if (err)
-            console.log(err);
-        else
+    ], function (err, projects) {
+        if (err) {
+            return callback(err);
+        } else {
             console.log("update projects successfully");
+            callback(null, projects);
+        }
     });
 };
 
@@ -115,7 +117,7 @@ Updater.prototype.updateAllWorkitems = function (callback) {
     });
 };
 
-Updater.prototype.parseAndStoreWorkitem = function (json, callback) {
+Updater.prototype.parseAndStoreWorkitems = function (json, callback) {
     async.waterfall([
         //parse the workitems json
         function (workitemsJson, callback) {
@@ -217,6 +219,61 @@ Updater.prototype.updateWorkitems = function (projectUuid, callback) {
         callback(null);
     });
 };
+
+/**
+ * Get the modified Time of the workitem specified by workitemUrl.
+ * */
+Updater.prototype.getModifiedTimeOfWorkitem = function (workitemUrl, callback) {
+    var fecther = this.fetcher;
+    var query = "?oslc_cm.properties=dc:modified";
+    fecther.getJson(workitemUrl + query, function (err, resBody) {
+        if (err) {
+            return callback(err);
+        }
+        var json = JSON.parse(resBody);
+        var date = new Date(json["dc:modified"]);
+        callback(null, date);
+    })
+};
+
+/**
+ * Update a single workitem.
+ * @param workitemUrl, the url of workitem.
+ * */
+Updater.prototype.updateSingleWorkitem = function (workitemUrl, callback) {
+    var fetcher = this.fetcher;
+    var self = this;
+    if (!fetcher.hasAuthed) {
+        return callback('Has not been authenticated, please auth first!');
+    }
+
+    async.waterfall([
+        //get the workitem json.
+        function (workitemUrl, callback) {
+            fetcher.getJson(workitemUrl, function (err, responseBody) {
+                if (err) {
+                    return callback(err);
+                }
+                var workitemsJson = workitemsJson.push(JSON.parse(responseBody));
+                callback(null, workitemsJson);
+            })
+        },
+        function (workitemsJson, callback) {
+            self.parseAndStoreWorkitems(workitemsJson, function (err) {
+                if (err) {
+                    return callback(err);
+                }
+                callback(null);
+            })
+        }
+    ], function (err) {
+        if (err) {
+            return callback(err);
+        }
+        callback(null);
+    })
+};
+
 
 /**
  * Update comments for the workitem whose id is @param workitemId.

@@ -6,13 +6,17 @@ var fs = require('fs'),
     Parser = require('./parsers/parser.js'),
     mongoose = require('mongoose'),
     Project = require('./models/project.js').Project,
-    User = require('./models/user.js').User;
-    Updater = require('./updater.js');
+    User = require('./models/user.js').User,
+    Updater = require('./updater.js'),
+    UpdateService = require('./updateservice.js');
+
+
 
 var rootUrl = "https://opentechtest.chinacloudapp.cn:9443/jazz";
 var username = "jack";
 var password = "jack";
 var updater = new Updater(rootUrl, username, password);
+var updateService = new UpdateService(120);
 
 //connet to MongoDB
 var connect = function() {
@@ -33,54 +37,61 @@ User.find({ username: username }, function (err, user) {
         var newUser = new User();
         newUser.password = password;
         newUser.username = username;
+        newUser.server.host = "https://opentechtest.chinacloudapp.cn";
+        newUser.server.port = 9443;
+        newUser.server.context = "jazz";
         newUser.save();
     }
 });
 
-updater.authenticate(function (err) {
+var date = new Date();
+console.log(date.valueOf());
+
+updateService.start();
+/*updater.authenticate(function (err) {
     if (err) {
         console.log("Login failed!");
     } else {
-        /*var url = "https://opentechtest.chinacloudapp.cn:9443/jazz/oslc/contexts/_AaqqEpD0EeWXese5nM0f4w/workitems";
+        /!*var url = "https://opentechtest.chinacloudapp.cn:9443/jazz/oslc/contexts/_AaqqEpD0EeWXese5nM0f4w/workitems";
         request.get(url, function(err, res) {
             if (err) {
                 console.log(err);
                 return;
             }
             console.log(res.body);
-        }).pipe(fs.createWriteStream('tast_new.xml'));*/
-        /*updater.updateProjects(function (err, result) {
+        }).pipe(fs.createWriteStream('tast_new.xml'));*!/
+        /!*updater.updateProjects(function (err, result) {
             console.log(result);
-        })*/
-        /*updater.updateWorkitems('_AaqqEpD0EeWXese5nM0f4w', function (err) {
+        })*!/
+        /!*updater.updateWorkitems('_AaqqEpD0EeWXese5nM0f4w', function (err) {
             if (err)
                 console.log("update workitems failed: " + err);
             else
                 console.log("successfully");
-        });*/
-        /*updater.updateAllWorkitems(function (err) {
+        });*!/
+        /!*updater.updateAllWorkitems(function (err) {
            if (err) {
                console.log("failed: " + err);
            } else {
                console.log("successfully");
            }
-        });*/
-        updater.updateProjects(function (err) {
+        });*!/
+        updater.updateProjects(function (err, projects) {
            if (err) {
                console.log("update project failed: " + err);
            } else {
-               console.log("successfully");
+               console.log("successfully : " + projects);
            }
         })
-        /*updater.updateAllComments(function (err) {
+        /!*updater.updateAllComments(function (err) {
             if (err) {
                 console.log("update comments failed: " + err)
             } else {
                 console.log("successfully");
             }
-        })*/
+        })*!/
     }
-});
+});*/
 
 /*fetcher.auth(function (err) {
     if (err) {
