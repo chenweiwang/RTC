@@ -21,15 +21,20 @@ module.exports = UpdateService;
  * update method at specified interval.
  * */
 UpdateService.prototype.start = function () {
+    var self = this;
     var sched = later.parse.recur()
                     .every(this.interval).second();
 
-    var timer = later.setInterval(this.update( function (err) {
-        if (err) {
-            console.log("Update failed at time: " + new Date().toDateString());
-        }
-        console.log("Update successfully at time: " + new Date().toDateString());
-    }), sched);
+    var timer = later.setInterval(function () {
+        self.update(function (err) {
+            var now = new Date();
+            var timeStr = now.toLocaleDateString() + " " + now.toLocaleTimeString();
+            if (err) {
+                console.log("Update failed at time: " +  timeStr);
+            }
+            console.log("Update successfully at time: " + timeStr);
+        });
+    }, sched);
 
 };
 
@@ -51,8 +56,8 @@ UpdateService.prototype.update = function (callback) {
             })
         },
         function (users, callback) {
-            async.eachOfLimit(users, 2, function (user, callback) {
-                self.updateSingleUser(user, callback);
+            async.each(users, function (user, cb) {
+                self.updateSingleUser(user, cb);
             }, function (err) {
                 if (err) {
                     return callback(err);
@@ -61,7 +66,7 @@ UpdateService.prototype.update = function (callback) {
             });
         }
     ], function (err) {
-        this.updatedProjectUuids.clear();
+        self.updatedProjectUuids.clear();
         if (err) {
             return callback(err);
         }
@@ -88,7 +93,8 @@ UpdateService.prototype.updateSingleUser = function (user, callback) {
             if (err) {
                 return callback('Get projects for user: ' + user.username + "error: " +err);
             }
-            async.eachOfLimit(projects, 2, function (project, callback) {
+
+            async.each(projects, function (project, callback) {
                 if (!uuids.has(project.uuid)) {
                     self.updateProject(project, updater, function (err) {
                         if (err) {
@@ -127,10 +133,11 @@ UpdateService.prototype.updateProject = function (project, updater, callback) {
             workitemUrls.push(json[i]["rdf:resource"]);
         }
 
-        async.eachOfLimit(workitemUrls, 5, function (url, callback) {
+        async.each(workitemUrls, function (url, callback) {
             updater.getModifiedTimeOfWorkitem(url, function (err, date) {
                 var timeThreshold = self.startTime.valueOf() - self.interval * 1000;
                 if (date.valueOf() > timeThreshold) {
+                    console.log("Updating workitem: " + url);
                     //TODO 将变化的内容可以加入到一个变化的队列中，然后进行智能推送。
                     updater.updateSingleWorkitem(url, function (err) {
                         if (err) {

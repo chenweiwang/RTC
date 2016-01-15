@@ -117,7 +117,7 @@ Updater.prototype.updateAllWorkitems = function (callback) {
     });
 };
 
-Updater.prototype.parseAndStoreWorkitems = function (json, callback) {
+Updater.prototype.parseAndStoreWorkitems = function (json, fetcher, callback) {
     async.waterfall([
         //parse the workitems json
         function (workitemsJson, callback) {
@@ -249,17 +249,18 @@ Updater.prototype.updateSingleWorkitem = function (workitemUrl, callback) {
 
     async.waterfall([
         //get the workitem json.
-        function (workitemUrl, callback) {
+        function (callback) {
             fetcher.getJson(workitemUrl, function (err, responseBody) {
                 if (err) {
                     return callback(err);
                 }
-                var workitemsJson = workitemsJson.push(JSON.parse(responseBody));
+                var workitemsJson = [];
+                workitemsJson.push(JSON.parse(responseBody));
                 callback(null, workitemsJson);
             })
         },
         function (workitemsJson, callback) {
-            self.parseAndStoreWorkitems(workitemsJson, function (err) {
+            self.parseAndStoreWorkitems(workitemsJson, fetcher, function (err) {
                 if (err) {
                     return callback(err);
                 }

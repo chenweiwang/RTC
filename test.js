@@ -16,7 +16,7 @@ var rootUrl = "https://opentechtest.chinacloudapp.cn:9443/jazz";
 var username = "jack";
 var password = "jack";
 var updater = new Updater(rootUrl, username, password);
-var updateService = new UpdateService(120);
+var updateService = new UpdateService(60);
 
 //connet to MongoDB
 var connect = function() {
