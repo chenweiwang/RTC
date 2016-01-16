@@ -178,11 +178,10 @@ var parseWorkitemOtherContributes = function (workitem, fetcher, callback) {
 /**
  * Parse the workitems json
  * */
-exports.parseWorkitemsJson = function (json, fetcher, callback) {
+exports.parseWorkitemsJson = function (workitemsJson, fetcher, callback) {
     var self = this;
-    var workitemsJson = JSON.parse(json);
     var workitems = [];
-    async.forEachLimit(workitemsJson["oslc_cm:results"], 10, function (workitemJson, callback) {
+    async.each(workitemsJson, function (workitemJson, callback) {
         self.parseWorkitemJson(workitemJson, fetcher, function (err, workitem) {
             if (err) {
                 return callback(err);

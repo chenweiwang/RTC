@@ -87,7 +87,7 @@ Updater.prototype.updateProjects = function (callback) {
         if (err) {
             return callback(err);
         } else {
-            console.log("update projects successfully");
+            //console.log("update projects successfully");
             callback(null, projects);
         }
     });
@@ -117,10 +117,10 @@ Updater.prototype.updateAllWorkitems = function (callback) {
     });
 };
 
-Updater.prototype.parseAndStoreWorkitems = function (json, fetcher, callback) {
+Updater.prototype.parseAndStoreWorkitems = function (workitemsJson, fetcher, callback) {
     async.waterfall([
         //parse the workitems json
-        function (workitemsJson, callback) {
+        function (callback) {
             Parser.parseWorkitemsJson(workitemsJson, fetcher, function (err, workitems) {
                 if (err)
                     return callback(err);
@@ -189,10 +189,11 @@ Updater.prototype.updateWorkitems = function (projectUuid, callback) {
     async.waterfall([
         //get workitems json from the server
         function (callback) {
-            fetcher.getWorkitemsJson(projectUuid, function (err, workitemsJson) {
+            fetcher.getWorkitemsJson(projectUuid, function (err, resBody) {
                 if (err)
                     return callback(err);
-                callback(null, workitemsJson);
+                var json = JSON.parse(resBody);
+                callback(null, json["oslc_cm:results"]);
             });
         },
         //parse the workitems json
@@ -232,6 +233,9 @@ Updater.prototype.getModifiedTimeOfWorkitem = function (workitemUrl, callback) {
         }
         var json = JSON.parse(resBody);
         var date = new Date(json["dc:modified"]);
+        if (date === undefined) {
+            console.log("date undefined.");
+        }
         callback(null, date);
     })
 };

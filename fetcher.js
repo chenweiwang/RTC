@@ -89,7 +89,7 @@ Fetcher.prototype.getProjects = function (callback) {
         var rootServices = JSON.parse(res);
         var projectsUrl = rootServices[self.rootServicesUrl]
             ["http://open-services.net/xmlns/cm/1.0/cmServiceProviders"][0].value;
-        console.log("Projects Url: " + projectsUrl);
+        //console.log("Projects Url: " + projectsUrl);
         //this dose not point to Fetcher obj;
         //instead we save this to self.
         self.getXml(projectsUrl, function (err, res) {

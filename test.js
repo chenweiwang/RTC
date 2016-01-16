@@ -16,7 +16,7 @@ var rootUrl = "https://opentechtest.chinacloudapp.cn:9443/jazz";
 var username = "jack";
 var password = "jack";
 var updater = new Updater(rootUrl, username, password);
-var updateService = new UpdateService(60);
+
 
 //connet to MongoDB
 var connect = function() {
@@ -44,14 +44,29 @@ User.find({ username: username }, function (err, user) {
     }
 });
 
-var date = new Date();
-console.log(date.valueOf());
-
+var updateService = new UpdateService(20);
 updateService.start();
+
+
 /*updater.authenticate(function (err) {
     if (err) {
         console.log("Login failed!");
     } else {
+        /!*updater.updateSingleWorkitem("https://opentechtest.chinacloudapp.cn:9443/jazz/resource/itemName/com.ibm.team.workitem.WorkItem/116"
+            , function (err) {
+                if (err) {
+                    console.log("asfsd");
+                }
+                console.log("asfsd");
+            });
+        updater.getModifiedTimeOfWorkitem("https://opentechtest.chinacloudapp.cn:9443/jazz/resource/itemName/com.ibm.team.workitem.WorkItem/116"
+            , function (err, date) {
+                if (err) {
+                    console.log("eerr");
+                }
+                console.log(date);
+            });*!/
+        //updater.updateSingleWorkitem()
         /!*var url = "https://opentechtest.chinacloudapp.cn:9443/jazz/oslc/contexts/_AaqqEpD0EeWXese5nM0f4w/workitems";
         request.get(url, function(err, res) {
             if (err) {
@@ -76,13 +91,13 @@ updateService.start();
                console.log("successfully");
            }
         });*!/
-        updater.updateProjects(function (err, projects) {
+        /!*updater.updateProjects(function (err, projects) {
            if (err) {
                console.log("update project failed: " + err);
            } else {
                console.log("successfully : " + projects);
            }
-        })
+        })*!/
         /!*updater.updateAllComments(function (err) {
             if (err) {
                 console.log("update comments failed: " + err)

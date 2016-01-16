@@ -11,6 +11,7 @@ function UpdateService(intervalBySecond) {
     this.interval = intervalBySecond;
     this.updatedProjectUuids = new Set();
     this.startTime = new Date(0);
+    this.timeThreshold = new Date(0);
 }
 
 module.exports = UpdateService;
@@ -30,9 +31,9 @@ UpdateService.prototype.start = function () {
             var now = new Date();
             var timeStr = now.toLocaleDateString() + " " + now.toLocaleTimeString();
             if (err) {
-                console.log("Update failed at time: " +  timeStr);
+                console.log("UpdateService failed at time: " +  timeStr + "\n");
             }
-            console.log("Update successfully at time: " + timeStr);
+            console.log("UpdateService succeeded at time: " + timeStr + "\n");
         });
     }, sched);
 
@@ -45,6 +46,11 @@ UpdateService.prototype.start = function () {
 UpdateService.prototype.update = function (callback) {
     var self = this;
     self.startTime = new Date();
+    self.timeThreshold = self.startTime.valueOf() - self.interval * 1000;
+    console.log("Time threshold: " + self.timeThreshold);
+    console.log("\n************************UpdateService**********************");
+    console.log("Starting update at: " + self.startTime.toLocaleDateString()
+        +  " " + self.startTime.toLocaleTimeString());
     async.waterfall([
         //find users
         function (callback) {
@@ -84,6 +90,7 @@ UpdateService.prototype.updateSingleUser = function (user, callback) {
     var rootUrl = user.server.host + ":" +
         user.server.port + "/" + user.server.context;
     var updater = new Updater(rootUrl, user.username, user.password);
+    console.log("Updating user: " + user.username);
     updater.authenticate(function (err) {
         if (err) {
             return callback(err);
@@ -96,6 +103,7 @@ UpdateService.prototype.updateSingleUser = function (user, callback) {
 
             async.each(projects, function (project, callback) {
                 if (!uuids.has(project.uuid)) {
+                    console.log("Updating project: " + project.title);
                     self.updateProject(project, updater, function (err) {
                         if (err) {
                             return callback(err);
@@ -135,8 +143,13 @@ UpdateService.prototype.updateProject = function (project, updater, callback) {
 
         async.each(workitemUrls, function (url, callback) {
             updater.getModifiedTimeOfWorkitem(url, function (err, date) {
-                var timeThreshold = self.startTime.valueOf() - self.interval * 1000;
-                if (date.valueOf() > timeThreshold) {
+                if (err) {
+                    console.log("Get modified Time of workitem: " + url
+                        )
+                    return callback(null);
+                }
+                //console.log(url + " time: " + date.valueOf());
+                if (date !== undefined && date.valueOf() > self.timeThreshold) {
                     console.log("Updating workitem: " + url);
                     //TODO 将变化的内容可以加入到一个变化的队列中，然后进行智能推送。
                     updater.updateSingleWorkitem(url, function (err) {
