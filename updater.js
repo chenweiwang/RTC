@@ -54,7 +54,7 @@ Updater.prototype.updateProjects = function (callback) {
             })
         },
         function (projects, callback) {
-            async.forEachLimit(projects, 5, function (project, callback) {
+            async.eachLimit(projects, 3, function (project, callback) {
                 var update = { title: project.title, details: project.details,
                     services: project.services, workitemUrl: project.workitemUrl };
                 Project.findOneAndUpdate({ uuid: project.uuid }, update, { upsert: true }, function (err) {

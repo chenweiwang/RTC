@@ -3,10 +3,5 @@
 node_modules/
 RTC.iml
 *.xml
-service.json
-task.json
-workitems.json
-services.json
-defect.json
 
 

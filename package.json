@@ -22,6 +22,7 @@
     "request": "^2.65.0",
     "serve-favicon": "~2.3.0",
     "superagent": "^1.4.0",
-    "xml2js": "^0.4.15"
+    "xml2js": "^0.4.15",
+    "bson": "~0.4.20"
   }
 }

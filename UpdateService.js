@@ -19,7 +19,7 @@ module.exports = UpdateService;
 
 /**
  * Start the UpdateService, it will invoke the
- * update method at specified interval.
+ * update method at the specified interval.
  * */
 UpdateService.prototype.start = function () {
     var self = this;
@@ -131,6 +131,7 @@ UpdateService.prototype.updateProject = function (project, updater, callback) {
     var self = this;
     var workitemUrl = project.workitemUrl;
     var query = "?oslc_cm.properties=oslc_cm:results";
+    //query all workitem Urls of this project.
     updater.fetcher.getJson(workitemUrl + query, function (err, resBody) {
         if (err) {
             return callback(err);
@@ -141,11 +142,11 @@ UpdateService.prototype.updateProject = function (project, updater, callback) {
             workitemUrls.push(json[i]["rdf:resource"]);
         }
 
-        async.each(workitemUrls, function (url, callback) {
+        async.eachLimit(workitemUrls, 10, function (url, callback) {
+            //Get the modified Time of this workitem, and judge whether the workitem has been changed.
             updater.getModifiedTimeOfWorkitem(url, function (err, date) {
                 if (err) {
-                    console.log("Get modified Time of workitem: " + url
-                        )
+                    console.log("Get modified Time of workitem: " + url);
                     return callback(null);
                 }
                 //console.log(url + " time: " + date.valueOf());
