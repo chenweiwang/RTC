@@ -8,7 +8,7 @@ var fs = require('fs'),
     Project = require('./models/project.js').Project,
     User = require('./models/user.js').User,
     Updater = require('./updater.js'),
-    UpdateService = require('./updateservice.js');
+    UpdateService = require('./updateService.js');
 
 
 

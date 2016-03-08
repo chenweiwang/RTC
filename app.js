@@ -35,8 +35,6 @@ mongoose.connection.on('error', console.log);
 //TODO 如果链接失败会一直重新连接，设置一个重连次数，超过次数后就不再尝试。
 mongoose.connection.on('disconnected', connect);
 
-
-
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
     var err = new Error('Not Found');

@@ -49,7 +49,7 @@ apiRoutes.post('/authenticate', function (req, res) {
                     });
                 }
 
-                var token = jwt.sign(user.username, settings.secret, {
+                var token = jwt.sign(username, settings.secret, {
                     expiresIn: '150d'
                 });
 
