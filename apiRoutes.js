@@ -50,7 +50,7 @@ apiRoutes.post('/authenticate', function (req, res) {
                 }
 
                 var token = jwt.sign(username, settings.secret, {
-                    expiresIn: '150d'
+                    expiresIn: '150 days'
                 });
 
                 res.json({
