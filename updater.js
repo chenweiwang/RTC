@@ -14,7 +14,7 @@ var Fetcher = require('./fetcher.js'),
 
 function Updater(rootUrl, username, password) {
     this.rootUrl = rootUrl;
-    this.request = newRequest();
+    this.request = newRequest().request;
     this.username = username;
     this.password = password;
     this.fetcher = new Fetcher(this.request, rootUrl, username, password);
