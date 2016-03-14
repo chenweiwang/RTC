@@ -90,8 +90,28 @@ Modifier.prototype.upload = function (method, url, json, callback) {
     });
 };
 
-Modifier.prototype.addComment = function () {
+Modifier.prototype.addComment = function (workitemId, json, callback) {
+    var self = this;
+    var url = self.rootUrl + '/jazz/oslc/workitems/' + workitemId + '/rtc_cm:comments';
+    self.upload('POST', url, json, function (err) {
+        if (err) {
+            console.log('POST comment: ' + json.toString() + 'ERROR: ' + err);
+            return callback(err);
+        }
+        callback(null);
+    })
+};
 
+Modifier.prototype.modifyWorkitem = function (workitemId, json, callback) {
+    var self = this;
+    var url = self.rootUrl + '/jazz/oslc/workitems/' + workitemId;
+    self.upload('PUT', url, json, function (err) {
+        if (err) {
+            console.log('POST comment: ' + json.toString() + 'ERROR: ' + err);
+            return callback(err);
+        }
+        callback(null);
+    })
 };
 
 
