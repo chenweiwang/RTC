@@ -10,8 +10,11 @@ module.exports = function () {
     //every request instance has a separate cookie store.
     var jar = request.jar();
     //enable cookie manager, and followAllRedirects.
-    return request.defaults({jar: jar, followAllRedirects: true});
-}
+    return {
+        request: request.defaults({jar: jar, followAllRedirects: true}),
+        jar: jar
+    };
+};
 
 
 

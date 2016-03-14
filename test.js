@@ -8,7 +8,8 @@ var fs = require('fs'),
     Project = require('./models/project.js').Project,
     User = require('./models/user.js').User,
     Updater = require('./updater.js'),
-    UpdateService = require('./updateService.js');
+    UpdateService = require('./updateService.js'),
+    Modifier = require('./modifier.js');
 
 
 
@@ -44,8 +45,8 @@ User.find({ username: username }, function (err, user) {
     }
 });
 
-var updateService = new UpdateService(20);
-updateService.start();
+/*var updateService = new UpdateService(20);
+updateService.start();*/
 
 
 /*updater.authenticate(function (err) {
@@ -108,60 +109,33 @@ updateService.start();
     }
 });*/
 
-/*fetcher.auth(function (err) {
-    if (err) {
-        console.log("Login failed!");
-    } else {
-        console.log("Login to " + rootUrl + " success!");
-        console.log("Begin to refresh resource..");
-        fetcher.getProjects(function (err, projectsXml) {
-            if (err) {
-                console.log("Fetch projects failed!");
-            } else {
-                console.log(projectsXml);
-               /!* parseString(projectsXml, function (err, projects) {
-                    if (err) {
-                        console.log("Parse xml Error");
-                    } else {
-                        //console.log(projects);
-                        var tmp = projects["oslc_disc:ServiceProviderCatalog"]["oslc_disc:entry"][0];
-                        var result = tmp["oslc_disc:ServiceProvider"][0]["oslc_disc:services"];
-                        console.log(result[0]["$"]["rdf:resource"]);
-                    }
-                });*!/
-                var url = "https://opentechtest.chinacloudapp.cn:9443/jazz/process/project-areas/_JjVPAH_uEeWbMNI6SG32dQ";
-                request.get(url, function(err, res) {
-                    console.log(res.body);
-                }).pipe(fs.createWriteStream('projectdetail.xml'));
+var modifier = new Modifier("https://opentechtest.chinacloudapp.cn:9443/jazz", 'jack', 'jack');
 
-                Parser.parseProjectsXml(projectsXml, function (err, projects) {
-                    if (err) {
-                        console.log("Parse Project xml error: " + err);
-                    } else {
-                        for (var i = 0; i < projects.length; ++i) {
-                            //pay attention to the loop variable i, fix the bug!
-                            //when the findOne callback func be called, the i will have changed!.
-                            var curProject = projects[i];
-                            Project.findOne({uuid: curProject["uuid"]}, function (err, result) {
-                                if (!err && !result) {
-                                    curProject.save(function (err) {
-                                        if (err) {
-                                            console.log(err);
-                                        } else {
-                                            console.log(curProject);
-                                        }
-                                    });
-                                } else {
-                                    console.log(err);
-                                }
-                            });
-                        }
-                    }
-                });
-            }
-        })
+modifier.authenticate(function (err) {
+    if (err) {
+        console.log(err);
+        return;
     }
-});*/
+    modifier.getJSESSIONID(function (err, id) {
+        if (err) {
+            console.log(err);
+            return;
+        }
+        console.log(id);
+    });
+
+  //  var json='{"dc:description":"New Comment Jack Auto"}';
+    var json = { 'dc:description': 'JSON format test1' };
+    modifier.post('POST', 'https://opentechtest.chinacloudapp.cn:9443/jazz/oslc/workitems/118/rtc_cm:comments', json, function (err) {
+        if (err) {
+            console.log(err);
+            return;
+        }
+        console.log('done');
+    });
+});
+
+
 
 
 
