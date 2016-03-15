@@ -1,10 +1,12 @@
 var express = require('express'),
+    async = require('async'),
     Updater = require('./updater.js'),
     jwt = require('jsonwebtoken'),
     User = require('./models/user.js').User,
     Project = require('./models/project.js').Project,
     Workitem = require('./models/workitem.js').Workitem,
     Comment = require('./models/comment.js').Comment,
+    Modifier = require('./modifier.js'),
     settings = require('./settings.js');
 
 
@@ -149,5 +151,78 @@ apiRoutes.get('/comments/:workitemId', function (req, res) {
     });
 });
 
+/**
+ * modify attributes of workitem.
+ * */
+apiRoutes.put('/workitems/:workitemId', function (req, res) {
+    var workitemId = req.params.workitemId || req.query.workitemId;
+    async.waterfall([
+        function (callback) {
+            User.findOne({ username: req.username }, function (err, user) {
+                if (err) {
+                    return callback(err);
+                }
+                callback(null, user.server.host + ':' + user.server.port
+                    + '/' + user.server.context, user.password);
+            })
+        },
+        function (rootUrl, password, callback) {
+            var modifier = new Modifier(rootUrl, req.username, password);
+            modifier.authenticate(function (err) {
+                if (err) {
+                    return callback(err);
+                }
+                modifier.modifyWorkitem(workitemId, req.body, callback);
+            });
+        }
+    ], function (err) {
+        if (err) {
+            return res.json({
+                'success': false,
+                'message': err
+            });
+        }
+        return res.json({
+            'success': true
+        });
+    });
+});
+
+/**
+ * add a comment for workitem.
+ * */
+apiRoutes.post('/comments/:workitemId', function (req, res) {
+    var workitemId = req.params.workitemId || req.query.workitemId;
+    async.waterfall([
+        function (callback) {
+            User.findOne({ username: req.username }, function (err, user) {
+                if (err) {
+                    return callback(err);
+                }
+                callback(null, user.server.host + ':' + user.server.port
+                    + '/' + user.server.context, user.password);
+            })
+        },
+        function (rootUrl, password, callback) {
+            var modifier = new Modifier(rootUrl, req.username, password);
+            modifier.authenticate(function (err) {
+               if (err) {
+                   return callback(err);
+               }
+               modifier.addComment(workitemId, req.body, callback);
+            });
+        }
+    ], function (err) {
+        if (err) {
+            return res.json({
+                'success': false,
+                'message': err
+            });
+        }
+        return res.json({
+            'success': true
+        });
+    });
+});
 
 module.exports = apiRoutes;
