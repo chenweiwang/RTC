@@ -39,8 +39,8 @@ Modifier.prototype.getJSESSIONID = function (callback) {
     var self = this;
     if (!self.hasAuthed) {
         return callback('Please authenticate first!');
-
     }
+
     var cookies = self.jar.getCookies(self.rootUrl);
 
     for (var i = 0; i < cookies.length; ++i) {
@@ -56,8 +56,8 @@ Modifier.prototype.upload = function (method, url, json, callback) {
     var self = this;
     if (!self.hasAuthed) {
         return callback('Please authenticate first!');
-
     }
+
     async.waterfall([
         function (callback) {
             self.getJSESSIONID(callback);
@@ -75,11 +75,11 @@ Modifier.prototype.upload = function (method, url, json, callback) {
             };
 
             self.request(options, function (err, response) {
-                if (!err || response.statusCode == 200 || response.statusCode == 201) {
+                if (!err && (response.statusCode === 200 || response.statusCode === 201)) {
                     return callback(null);
                 }
 
-                callback(err);
+                callback('Modifier.Upload failed: ' + response.statusCode);
             })
         }
     ], function (err) {
@@ -92,10 +92,10 @@ Modifier.prototype.upload = function (method, url, json, callback) {
 
 Modifier.prototype.addComment = function (workitemId, json, callback) {
     var self = this;
-    var url = self.rootUrl + '/jazz/oslc/workitems/' + workitemId + '/rtc_cm:comments';
+    var url = self.rootUrl + '/oslc/workitems/' + workitemId + '/rtc_cm:comments';
     self.upload('POST', url, json, function (err) {
         if (err) {
-            console.log('POST comment: ' + json.toString() + 'ERROR: ' + err);
+            console.log('POST comment ERROR: ' + err);
             return callback(err);
         }
         callback(null);
@@ -104,10 +104,10 @@ Modifier.prototype.addComment = function (workitemId, json, callback) {
 
 Modifier.prototype.modifyWorkitem = function (workitemId, json, callback) {
     var self = this;
-    var url = self.rootUrl + '/jazz/oslc/workitems/' + workitemId;
+    var url = self.rootUrl + '/oslc/workitems/' + workitemId;
     self.upload('PUT', url, json, function (err) {
         if (err) {
-            console.log('POST comment: ' + json.toString() + 'ERROR: ' + err);
+            console.log('PUT workitem attributes: ' + json.toString() + 'ERROR: ' + err);
             return callback(err);
         }
         callback(null);
