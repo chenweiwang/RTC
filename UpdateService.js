@@ -32,8 +32,9 @@ UpdateService.prototype.start = function () {
             var timeStr = now.toLocaleDateString() + " " + now.toLocaleTimeString();
             if (err) {
                 console.log("UpdateService failed at time: " +  timeStr + "\n");
+            } else {
+                console.log("UpdateService succeeded at time: " + timeStr + "\n");
             }
-            console.log("UpdateService succeeded at time: " + timeStr + "\n");
         });
     }, sched);
 
