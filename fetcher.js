@@ -17,7 +17,6 @@ function Fetcher(request, rootUrl, username, password) {
 
 module.exports = Fetcher;
 
-
 /**
  * The auth function, delegate the actual authentication to authenticate.js
  * */
@@ -34,6 +33,8 @@ Fetcher.prototype.auth = function (callback) {
                 callback(null);
             }
         });
+    } else {
+        callback(null);
     }
 };
 
